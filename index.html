@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Locate — Explore freely. Find your way back.</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0F0D;--surface:#0F1A17;--card:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);--sage:#3A6458;--sage-l:#7AADA0;
+  --flag:#BF5A39;--ink:#DDE8E4;--ink2:#A8C8BE;--ink3:rgba(160,200,185,0.45);
+  --red:#A32D2D;--red-l:rgba(163,45,45,0.15);--amber:#BA7517;--amber-l:rgba(186,117,23,0.15);
+  --green:#2D6A40;--green-l:rgba(45,106,64,0.15);
+}
+body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* ══════════════════════════════════════════
+   PUBLIC SITE STYLES
+══════════════════════════════════════════ */
+.pub-nav{position:fixed;top:0;left:0;right:0;height:64px;background:rgba(10,15,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:200}
+.pub-nav-logo{font-style:italic;font-size:22px;font-weight:300;color:var(--ink);cursor:pointer;text-decoration:none}
+.pub-nav-links{display:flex;align-items:center;gap:28px}
+.pub-nav-links a{font-size:14px;color:var(--ink2);text-decoration:none;transition:color .15s;cursor:pointer}
+.pub-nav-links a:hover{color:var(--ink)}
+.pub-nav-cta{padding:8px 20px;background:var(--sage);border-radius:100px;font-size:13px;font-weight:600;color:#D8EDE7;text-decoration:none;border:none;cursor:pointer}
+.pub-nav-admin{padding:8px 16px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:100px;font-size:12px;color:var(--ink3);cursor:pointer;text-decoration:none}
+
+.pub-page{display:none;min-height:100vh;padding-top:64px}
+.pub-page.active{display:block}
+
+/* Hero */
+.hero{min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 60px;background:radial-gradient(ellipse at 50% 0%,rgba(58,100,88,0.18) 0%,transparent 65%)}
+.hero-logo{font-style:italic;font-size:18px;font-weight:300;color:var(--sage-l);margin-bottom:28px;letter-spacing:0.05em}
+.hero-title{font-size:clamp(42px,7vw,76px);font-weight:300;line-height:1.08;letter-spacing:-0.03em;color:var(--ink);margin-bottom:20px}
+.hero-title em{font-style:italic;color:var(--sage-l)}
+.hero-sub{font-size:clamp(16px,2.5vw,20px);color:var(--ink2);max-width:580px;line-height:1.7;margin-bottom:40px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.btn-hero-primary{padding:15px 32px;background:var(--flag);border-radius:100px;font-size:16px;font-weight:600;color:white;text-decoration:none;border:none;cursor:pointer;transition:opacity .15s}
+.btn-hero-primary:hover{opacity:.85}
+.btn-hero-secondary{padding:15px 32px;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:100px;font-size:16px;color:var(--ink2);text-decoration:none;cursor:pointer;transition:background .15s}
+.btn-hero-secondary:hover{background:rgba(255,255,255,0.1)}
+.hero-badges{display:flex;gap:20px;margin-top:48px;justify-content:center;flex-wrap:wrap}
+.hero-badge{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink3)}
+.hero-badge-dot{width:6px;height:6px;border-radius:3px;background:var(--sage-l)}
+
+/* Sections */
+.pub-section{padding:80px 24px;max-width:1100px;margin:0 auto}
+.pub-section-sm{padding:60px 24px;max-width:900px;margin:0 auto}
+.section-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-l);margin-bottom:14px}
+.section-title{font-size:clamp(28px,4vw,42px);font-weight:300;color:var(--ink);line-height:1.2;margin-bottom:14px;letter-spacing:-0.02em}
+.section-sub{font-size:16px;color:var(--ink2);line-height:1.7;max-width:600px;margin-bottom:48px}
+
+/* Feature grid */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 26px}
+.feature-icon{font-size:32px;margin-bottom:16px}
+.feature-title{font-size:17px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.feature-body{font-size:14px;color:var(--ink2);line-height:1.7}
+
+/* Three col */
+.three-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:16px}
+.three-item{text-align:center;padding:32px 20px}
+.three-icon{font-size:42px;margin-bottom:16px}
+.three-title{font-size:18px;font-weight:500;color:var(--ink);margin-bottom:10px}
+.three-body{font-size:14px;color:var(--ink2);line-height:1.7}
+
+/* Pull quote */
+.pull-quote{text-align:center;padding:80px 24px;background:linear-gradient(180deg,transparent,rgba(58,100,88,0.1),transparent)}
+.pull-quote-text{font-size:clamp(28px,5vw,52px);font-weight:300;font-style:italic;color:var(--ink);letter-spacing:-0.02em}
+
+/* Download section */
+.download-section{background:var(--surface);border-radius:24px;padding:56px 48px;text-align:center;border:1px solid var(--border);margin:0 24px}
+.download-title{font-size:clamp(24px,4vw,38px);font-weight:300;color:var(--ink);margin-bottom:14px}
+.download-sub{font-size:16px;color:var(--ink2);margin-bottom:32px;line-height:1.6}
+.download-meta{font-size:13px;color:var(--ink3);margin-top:14px}
+.play-btn{display:inline-flex;align-items:center;gap:12px;padding:14px 28px;background:var(--ink);border-radius:12px;color:var(--bg);text-decoration:none;font-weight:600;font-size:15px;transition:opacity .15s}
+.play-btn:hover{opacity:.85}
+.play-icon{font-size:24px}
+
+/* Advertise */
+.pkg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:16px}
+.pkg-card{background:var(--surface);border:2px solid var(--border);border-radius:20px;padding:32px 28px;position:relative;transition:border-color .2s}
+.pkg-card:hover{border-color:var(--sage-l)}
+.pkg-card.popular{border-color:rgba(191,90,57,0.4)}
+.pkg-popular-tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--flag);color:white;font-size:11px;font-weight:600;padding:4px 14px;border-radius:100px;white-space:nowrap}
+.pkg-name{font-size:20px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.pkg-price{font-size:42px;font-weight:300;color:var(--ink);line-height:1}
+.pkg-price span{font-size:16px;color:var(--ink3);font-weight:400}
+.pkg-desc{font-size:13px;color:var(--ink3);line-height:1.7;margin-top:12px}
+.pkg-cta{display:block;margin-top:24px;padding:12px;background:var(--sage);border-radius:100px;text-align:center;font-size:14px;font-weight:600;color:#D8EDE7;text-decoration:none;border:none;cursor:pointer}
+
+/* Values */
+.values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px}
+.value-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
+.value-icon{font-size:26px;margin-bottom:12px}
+.value-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.value-body{font-size:13px;color:var(--ink2);line-height:1.65}
+
+/* Contact */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:40px}
+.contact-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px}
+.contact-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+.contact-email{font-size:14px;color:var(--sage-l);word-break:break-all}
+.contact-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+
+/* Legal pages */
+.legal-wrap{max-width:780px;margin:0 auto;padding:48px 24px}
+.legal-wrap h1{font-size:32px;font-weight:300;color:var(--ink);margin-bottom:8px}
+.legal-wrap .legal-date{font-size:12px;color:var(--ink3);margin-bottom:40px;letter-spacing:0.04em}
+.legal-wrap h2{font-size:16px;font-weight:600;color:var(--ink);margin:36px 0 10px;padding-top:8px;border-top:1px solid var(--border)}
+.legal-wrap h3{font-size:14px;font-weight:600;color:var(--ink2);margin:16px 0 6px}
+.legal-wrap p{font-size:14px;color:var(--ink2);margin-bottom:12px;line-height:1.75}
+.legal-wrap ul,.legal-wrap ol{padding-left:20px;margin-bottom:14px}
+.legal-wrap li{font-size:14px;color:var(--ink2);margin-bottom:5px;line-height:1.65}
+.legal-wrap a{color:var(--sage-l)}
+.legal-wrap table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px}
+.legal-wrap th{text-align:left;padding:8px 12px;background:rgba(255,255,255,0.05);color:var(--ink3);font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.legal-wrap td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--ink2);vertical-align:top;font-size:13px}
+.legal-wrap tr:last-child td{border-bottom:none}
+.age-box{background:rgba(191,90,57,0.1);border:1px solid rgba(191,90,57,0.25);border-radius:10px;padding:14px 18px;margin:12px 0}
+.age-box p{color:rgba(220,180,160,0.85)!important;font-size:13px!important;margin:0!important}
+.rule-box{background:rgba(163,45,45,0.1);border:1px solid rgba(163,45,45,0.25);border-radius:10px;padding:14px 18px;margin:12px 0}
+.rule-box p{color:#F08080!important;font-size:13px!important;font-weight:600;margin:0 0 8px!important}
+.rule-box li{color:rgba(240,128,128,0.8)!important;font-size:12px!important}
+
+/* Summary box */
+.legal-summary{background:rgba(58,100,88,0.12);border:1px solid rgba(122,173,160,0.2);border-radius:12px;padding:16px 20px;margin-bottom:36px}
+.legal-summary p{color:rgba(180,220,205,0.8)!important;font-size:13px!important;margin:0!important}
+
+/* Public footer */
+.pub-footer{background:var(--surface);border-top:1px solid var(--border);padding:40px 32px;margin-top:80px}
+.pub-footer-inner{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px}
+.pub-footer-logo{font-style:italic;font-size:20px;font-weight:300;color:var(--sage-l)}
+.pub-footer-links{display:flex;flex-wrap:wrap;gap:20px}
+.pub-footer-links a{font-size:13px;color:var(--ink3);text-decoration:none;cursor:pointer}
+.pub-footer-links a:hover{color:var(--ink2)}
+.pub-footer-copy{font-size:12px;color:var(--ink3);width:100%;margin-top:8px}
+
+/* ══════════════════════════════════════════
+   ADMIN STYLES (unchanged from original)
+══════════════════════════════════════════ */
+#login-screen{display:none;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+#login-screen.active{display:flex}
+.login-box{width:100%;max-width:380px;background:var(--surface);border-radius:20px;padding:36px 32px;border:1px solid var(--border)}
+.login-logo{font-style:italic;font-size:28px;font-weight:300;color:var(--ink);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--ink3);margin-bottom:24px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--sage-l)}
+.field textarea{min-height:80px;resize:vertical}
+.btn-primary{width:100%;height:48px;background:var(--sage);border:none;border-radius:100px;font-size:15px;font-weight:600;color:#D8EDE7;cursor:pointer;transition:opacity .15s;font-family:inherit}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.error-msg{background:var(--red-l);border:1px solid rgba(163,45,45,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:#F08080;margin-bottom:16px;display:none}
+#app{display:none}
+#app.active{display:block;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sidebar-logo{font-style:italic;font-size:20px;font-weight:300;color:var(--sage-l);padding:0 20px 20px;border-bottom:1px solid var(--border)}
+.nav-section{padding:16px 12px 4px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;color:var(--ink2);cursor:pointer;transition:background .12s;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+.nav-item:hover{background:rgba(255,255,255,.05)}
+.nav-item.active{background:rgba(58,100,88,.3);color:var(--ink)}
+.nav-item .icon{font-size:16px;width:20px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--flag);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px}
+.sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border)}
+.sidebar-user{font-size:12px;color:var(--ink3);margin-bottom:10px}
+.btn-logout{width:100%;padding:8px;background:rgba(163,45,45,.2);border:1px solid rgba(163,45,45,.3);border-radius:8px;color:#F08080;font-size:13px;cursor:pointer;font-family:inherit}
+.main{margin-left:220px;padding:28px 32px;min-height:100vh}
+.page{display:none}
+.page.active{display:block}
+.page-title{font-size:24px;font-weight:300;color:var(--ink);margin-bottom:6px}
+.page-sub{font-size:13px;color:var(--ink3);margin-bottom:24px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px}
+.stat-card.urgent{border-color:rgba(163,45,45,.4);background:var(--red-l)}
+.stat-card.warn{border-color:rgba(186,117,23,.4);background:var(--amber-l)}
+.stat-num{font-size:32px;font-weight:300;color:var(--ink);line-height:1}
+.stat-num.red{color:#F08080}
+.stat-num.amber{color:#F0C060}
+.stat-lbl{font-size:11px;color:var(--ink3);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.table-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.table-title{font-size:15px;font-weight:500;color:var(--ink)}
+.search-input{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;color:var(--ink);outline:none;width:220px;font-family:inherit}
+.search-input:focus{border-color:var(--sage-l)}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--border)}
+td{padding:12px 16px;font-size:13px;color:var(--ink2);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.avatar-sm{width:32px;height:32px;border-radius:16px;background:rgba(58,100,88,.35);display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:var(--sage-l);font-weight:500;vertical-align:middle;margin-right:8px}
+.avatar-img{width:32px;height:32px;border-radius:16px;object-fit:cover;vertical-align:middle;margin-right:8px}
+.badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:.03em}
+.badge-green{background:var(--green-l);color:#6DCF9A}
+.badge-red{background:var(--red-l);color:#F08080}
+.badge-amber{background:var(--amber-l);color:#F0C060}
+.badge-gray{background:rgba(255,255,255,.07);color:var(--ink3)}
+.badge-blue{background:rgba(100,150,255,.12);color:#90B8F8}
+.btn{padding:7px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:opacity .15s;font-family:inherit}
+.btn:hover{opacity:.8}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-danger{background:var(--red-l);color:#F08080;border:1px solid rgba(163,45,45,.3)}
+.btn-warn{background:var(--amber-l);color:#F0C060;border:1px solid rgba(186,117,23,.3)}
+.btn-success{background:var(--green-l);color:#6DCF9A;border:1px solid rgba(45,106,64,.3)}
+.btn-neutral{background:rgba(255,255,255,.06);color:var(--ink2);border:1px solid var(--border)}
+.btn-sage{background:var(--sage);color:#D8EDE7;border:none}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px;border:1px solid var(--border);padding:28px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--ink3);margin-bottom:20px;line-height:1.5}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+#toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:14px;color:var(--ink);box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateY(80px);opacity:0;transition:all .25s;z-index:9999;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.success{border-color:rgba(45,106,64,.5);color:#6DCF9A}
+#toast.error{border-color:rgba(163,45,45,.5);color:#F08080}
+.report-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.report-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.report-reason{padding:4px 12px;border-radius:100px;background:rgba(163,45,45,.2);color:#F08080;font-size:12px;font-weight:600}
+.report-meta{font-size:12px;color:var(--ink3);flex:1}
+.report-detail{font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:12px;background:rgba(255,255,255,.03);border-radius:8px;padding:10px 14px}
+.preview-img{max-width:200px;max-height:200px;border-radius:10px;margin-bottom:10px;cursor:pointer}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--sage-l);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-row td,.empty-row td{text-align:center;padding:40px;color:var(--ink3)}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding:16px}
+  .pub-nav-links{display:none}
+  .hero-title{font-size:36px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .download-section{padding:36px 24px;margin:0 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     PUBLIC NAVIGATION
+══════════════════════════════════════════ -->
+<nav class="pub-nav" id="pub-nav">
+  <a class="pub-nav-logo" onclick="showPub('home')">locate</a>
+  <div class="pub-nav-links">
+    <a onclick="showPub('home')">Home</a>
+    <a onclick="showPub('download')">Download</a>
+    <a onclick="showPub('advertise')">Advertise</a>
+    <a onclick="showPub('about')">About</a>
+    <a onclick="showPub('contact')">Contact</a>
+    <a onclick="showPub('privacy')">Privacy</a>
+    <a onclick="showPub('terms')">Terms</a>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <a class="pub-nav-cta" onclick="showPub('download')">Download</a>
+    <a class="pub-nav-admin" onclick="showAdminLogin()">Admin ›</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     PUBLIC PAGES
+══════════════════════════════════════════ -->
+
+<!-- HOME -->
+<div class="pub-page active" id="pub-home">
+  <div class="hero">
+    <div class="hero-logo">locate</div>
+    <h1 class="hero-title">Explore freely.<br><em>Find your way back.</em></h1>
+    <p class="hero-sub">Locate records your path as you explore so you can always find your way home. Save places, share journeys, and connect with people living where you want to be.</p>
+    <div class="hero-btns">
+      <a class="btn-hero-primary" onclick="showPub('download')">Download on Android</a>
+      <a class="btn-hero-secondary" onclick="showPub('about')">Learn more</a>
+    </div>
+    <div class="hero-badges">
+      <span class="hero-badge"><span class="hero-badge-dot"></span>Free to use</span>
+      <span class="hero-badge"><span class="hero-badge-dot"></span>Works offline</span>
+      <span class="hero-badge"><span class="hero-badge-dot"></span>Safe for all ages</span>
+      <span class="hero-badge"><span class="hero-badge-dot"></span>Global community</span>
+    </div>
+  </div>
+
+  <div class="pub-section">
+    <div class="section-label">What Locate does</div>
+    <div class="section-title">Everything you need to explore with confidence</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🗺</div>
+        <div class="feature-title">Trail recording</div>
+        <div class="feature-body">Plant a flag at your hotel or campsite. Locate quietly records your trail as you walk — no internet needed, even with your screen off.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏠</div>
+        <div class="feature-title">Always find home</div>
+        <div class="feature-body">When you're ready to head back, Locate guides you along real roads and footpaths — not a straight line through buildings.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <div class="feature-title">Save what matters</div>
+        <div class="feature-body">Spotted a restaurant you want to return to? A taxi rank? A waterfall? Save it, set a reminder, and Locate will show you how to get there.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <div class="feature-title">A global community</div>
+        <div class="feature-body">Share your journey with explorers worldwide. Post photos, stories, and experiences. Follow people who go where you want to go.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✈️</div>
+        <div class="feature-title">Relocate with confidence</div>
+        <div class="feature-body">Thinking of moving abroad? Connect with people already living there. Real advice from real locals who have made the move.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Direct messages</div>
+        <div class="feature-body">Private conversations between explorers. Plan trips together, ask for local advice, or stay in touch with people you meet along the way.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <div class="pull-quote-text">"You are here."</div>
+  </div>
+
+  <div style="padding:0 24px 80px;max-width:1100px;margin:0 auto">
+    <div class="download-section">
+      <div class="download-title">Ready to explore?</div>
+      <div class="download-sub">Download Locate free on Android. The map, trails, landmarks, and return navigation are completely free. Create an account to join the community.</div>
+      <a class="play-btn" href="https://play.google.com/store/apps/details?id=com.anonymous.locate" target="_blank">
+        <span class="play-icon">▶</span>
+        <div style="text-align:left"><div style="font-size:10px;font-weight:400;opacity:0.7">GET IT ON</div><div>Google Play</div></div>
+      </a>
+      <div class="download-meta">Free · No subscription · Android 8.0+</div>
+    </div>
+  </div>
+
+  <div class="pub-footer">
+    <div class="pub-footer-inner">
+      <div class="pub-footer-logo">locate</div>
+      <div class="pub-footer-links">
+        <a onclick="showPub('privacy')">Privacy Policy</a>
+        <a onclick="showPub('terms')">Terms of Use</a>
+        <a onclick="showPub('advertise')">Advertise</a>
+        <a onclick="showPub('contact')">Contact</a>
+      </div>
+      <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- DOWNLOAD -->
+<div class="pub-page" id="pub-download">
+  <div class="pub-section-sm" style="padding-top:80px">
+    <div class="section-label">Get the app</div>
+    <div class="section-title">Download Locate — free on Android</div>
+    <div class="section-sub">Everything you need to explore a new city, hike a trail, or navigate an unfamiliar place. Download once and it works anywhere in the world.</div>
+    <div style="margin-bottom:48px">
+      <a class="play-btn" href="https://play.google.com/store/apps/details?id=com.anonymous.locate" target="_blank">
+        <span class="play-icon">▶</span>
+        <div style="text-align:left"><div style="font-size:10px;font-weight:400;opacity:0.7">GET IT ON</div><div>Google Play</div></div>
+      </a>
+      <div style="font-size:13px;color:var(--ink3);margin-top:12px">Free · No subscription required · Android 8.0+</div>
+    </div>
+
+    <div class="section-label">What's free</div>
+    <div class="three-col" style="margin-bottom:60px">
+      <div class="three-item" style="background:var(--surface);border:1px solid var(--border);border-radius:18px">
+        <div class="three-icon">🗺</div>
+        <div class="three-title">Map and navigation</div>
+        <div class="three-body">Full GPS trail recording, saved landmarks, reminders, and return navigation. Completely free, forever.</div>
+      </div>
+      <div class="three-item" style="background:var(--surface);border:1px solid var(--border);border-radius:18px">
+        <div class="three-icon">🌍</div>
+        <div class="three-title">Social community</div>
+        <div class="three-body">Create a profile, follow explorers, post photos and stories, join travel groups. Free to join.</div>
+      </div>
+      <div class="three-item" style="background:var(--surface);border:1px solid var(--border);border-radius:18px">
+        <div class="three-icon">✈️</div>
+        <div class="three-title">Relocation guides</div>
+        <div class="three-body">Browse local guides worldwide and connect with people who have already made the move. Free.</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;margin-bottom:40px">
+      <div class="section-label">iOS coming soon</div>
+      <div style="font-size:18px;font-weight:300;color:var(--ink);margin-bottom:10px">iPhone version in development</div>
+      <div style="font-size:14px;color:var(--ink2);margin-bottom:20px">Leave your email and we will notify you the moment it is available.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input id="ios-email" type="email" placeholder="Your email address" style="flex:1;min-width:220px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--ink);outline:none;font-family:inherit">
+        <button onclick="submitIosEmail()" style="padding:12px 24px;background:var(--sage);border:none;border-radius:100px;font-size:14px;font-weight:600;color:#D8EDE7;cursor:pointer;font-family:inherit">Notify me</button>
+      </div>
+    </div>
+  </div>
+  <div class="pub-footer">
+    <div class="pub-footer-inner">
+      <div class="pub-footer-logo">locate</div>
+      <div class="pub-footer-links">
+        <a onclick="showPub('home')">Home</a>
+        <a onclick="showPub('privacy')">Privacy</a>
+        <a onclick="showPub('terms')">Terms</a>
+        <a onclick="showPub('contact')">Contact</a>
+      </div>
+      <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADVERTISE -->
+<div class="pub-page" id="pub-advertise">
+  <div class="pub-section" style="padding-top:80px">
+    <div class="section-label">Advertising</div>
+    <div class="section-title">Reach travellers and people relocating abroad</div>
+    <div class="section-sub">Locate connects explorers, expats, and people planning their next move. Put your business in front of exactly the people who need it — when they need it most.</div>
+
+    <div class="three-col" style="margin-bottom:60px">
+      <div class="three-item">
+        <div class="three-icon">✈️</div>
+        <div class="three-title">Active travellers</div>
+        <div class="three-body">People currently on holiday or exploring a new city — looking for hotels, restaurants, transport, and local experiences right now.</div>
+      </div>
+      <div class="three-item">
+        <div class="three-icon">🏠</div>
+        <div class="three-title">People relocating</div>
+        <div class="three-body">Users actively researching where to move, comparing cities, and connecting with local guides. A highly motivated, high-intent audience.</div>
+      </div>
+      <div class="three-item">
+        <div class="three-icon">🌍</div>
+        <div class="three-title">Expats and nomads</div>
+        <div class="three-body">Long-term travellers and people who have moved abroad — seeking services, communities, and recommendations every day.</div>
+      </div>
+    </div>
+
+    <div class="section-label">Packages</div>
+    <div style="font-size:16px;font-weight:300;color:var(--ink);margin-bottom:8px">Choose a package and create your ad</div>
+    <div style="font-size:14px;color:var(--ink3);margin-bottom:32px">All ads are reviewed by our team before going live. Flat-rate pricing — no bidding, no surprises.</div>
+
+    <div class="pkg-grid" style="margin-bottom:48px">
+      <div class="pkg-card">
+        <div class="pkg-name">Starter</div>
+        <div class="pkg-price">$49<span> USD</span></div>
+        <div class="pkg-desc">7 days in feed · ~5,000 impressions<br>Great for local businesses making their first move.</div>
+        <a class="pkg-cta" href="javascript:void(0)" onclick="goToAdPortal()">Create ad →</a>
+      </div>
+      <div class="pkg-card popular">
+        <div class="pkg-popular-tag">Most popular</div>
+        <div class="pkg-name">Explorer</div>
+        <div class="pkg-price">$99<span> USD</span></div>
+        <div class="pkg-desc">14 days in feed · ~15,000 impressions<br>Reach travellers across your region.</div>
+        <a class="pkg-cta" href="javascript:void(0)" onclick="goToAdPortal()">Create ad →</a>
+      </div>
+      <div class="pkg-card">
+        <div class="pkg-name">Destination</div>
+        <div class="pkg-price">$199<span> USD</span></div>
+        <div class="pkg-desc">30 days in feed · ~40,000 impressions<br>Maximum exposure for hotels and services.</div>
+        <a class="pkg-cta" href="javascript:void(0)" onclick="goToAdPortal()">Create ad →</a>
+      </div>
+    </div>
+
+    <div class="values-grid" style="margin-bottom:60px">
+      <div class="value-card"><div class="value-icon">🎯</div><div class="value-title">Targeted by destination</div><div class="value-body">Show your ad only to users exploring or relocating to your city or country.</div></div>
+      <div class="value-card"><div class="value-icon">✅</div><div class="value-title">Manually approved</div><div class="value-body">Every ad is reviewed by our team before going live. Quality guaranteed.</div></div>
+      <div class="value-card"><div class="value-icon">📊</div><div class="value-title">Real analytics</div><div class="value-body">See impressions, clicks, and engagement for every campaign in real time.</div></div>
+      <div class="value-card"><div class="value-icon">✉️</div><div class="value-title">Direct support</div><div class="value-body">Questions about your campaign? Email us and a real person responds.</div></div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px;text-align:center">
+      <div style="font-size:22px;font-weight:300;color:var(--ink);margin-bottom:10px">Ready to reach your audience?</div>
+      <div style="font-size:14px;color:var(--ink2);margin-bottom:24px">Create your ad in minutes. Pay securely by card. Live within 24 hours of approval.</div>
+      <button class="btn btn-sage" style="padding:14px 32px;border-radius:100px;font-size:15px" onclick="goToAdPortal()">Create your ad now</button>
+      <div style="font-size:12px;color:var(--ink3);margin-top:12px">Questions? locate@locatecommunity.com</div>
+    </div>
+  </div>
+  <div class="pub-footer">
+    <div class="pub-footer-inner">
+      <div class="pub-footer-logo">locate</div>
+      <div class="pub-footer-links">
+        <a onclick="showPub('home')">Home</a>
+        <a onclick="showPub('privacy')">Privacy</a>
+        <a onclick="showPub('terms')">Terms</a>
+        <a onclick="showPub('contact')">Contact</a>
+      </div>
+      <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="pub-page" id="pub-about">
+  <div class="pub-section-sm" style="padding-top:80px">
+    <div class="section-label">Our story</div>
+    <div class="section-title">Built for people who explore</div>
+    <div style="font-size:16px;color:var(--ink2);line-height:1.8;margin-bottom:48px;max-width:680px">
+      Every traveller knows the feeling. You step out of your hotel in a city you don't know, you turn left, then right, then left again, and twenty minutes later you have no idea where you are.<br><br>
+      Locate was built to fix that. A simple flag at your starting point, a quiet trail recording in your pocket, and a way home whenever you need it.<br><br>
+      From that beginning, Locate has grown into a travel community — a place to share what you find, follow people who go where you want to go, and connect with someone who actually lives where you're thinking of moving.<br><br>
+      We are Balo Services — building tools that help people explore the world with confidence.
+    </div>
+
+    <div class="section-label">Our values</div>
+    <div class="values-grid" style="margin-bottom:60px">
+      <div class="value-card"><div class="value-icon">🔒</div><div class="value-title">Your data stays yours</div><div class="value-body">Your map and trail data never leaves your device. We will never sell your personal information to advertisers or data brokers.</div></div>
+      <div class="value-card"><div class="value-icon">🛡</div><div class="value-title">Safe for everyone</div><div class="value-body">Locate is designed for explorers of all ages. Every piece of content is moderated. We take community safety seriously.</div></div>
+      <div class="value-card"><div class="value-icon">💬</div><div class="value-title">Honest and transparent</div><div class="value-body">We are clear about what data we collect, why we collect it, and how we use it. No hidden terms. No small print surprises.</div></div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px;margin-bottom:60px">
+      <div style="font-size:18px;font-weight:500;color:var(--ink);margin-bottom:8px">Get in touch</div>
+      <div style="font-size:14px;color:var(--ink2);margin-bottom:6px">General enquiries, advertising, press, and partnerships:</div>
+      <a href="mailto:locate@locatecommunity.com" style="color:var(--sage-l);font-size:16px">locate@locatecommunity.com</a>
+    </div>
+  </div>
+  <div class="pub-footer">
+    <div class="pub-footer-inner">
+      <div class="pub-footer-logo">locate</div>
+      <div class="pub-footer-links">
+        <a onclick="showPub('home')">Home</a>
+        <a onclick="showPub('privacy')">Privacy</a>
+        <a onclick="showPub('terms')">Terms</a>
+        <a onclick="showPub('contact')">Contact</a>
+      </div>
+      <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="pub-page" id="pub-contact">
+  <div class="pub-section-sm" style="padding-top:80px">
+    <div class="section-label">Get in touch</div>
+    <div class="section-title">We'd love to hear from you</div>
+    <div class="section-sub">Whether you have a question about the app, an advertising enquiry, or just want to say hello — we read every message and aim to reply within 48 hours.</div>
+
+    <div class="contact-grid" style="margin-bottom:40px">
+      <div class="contact-card">
+        <div class="contact-label">General enquiries</div>
+        <a href="mailto:locate@locatecommunity.com" class="contact-email">locate@locatecommunity.com</a>
+        <div class="contact-sub">Reply within 48 hours</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">Advertising</div>
+        <a href="mailto:locate@locatecommunity.com" class="contact-email">locate@locatecommunity.com</a>
+        <div class="contact-sub">Subject: Advertising enquiry</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">Account support</div>
+        <a href="mailto:locate@locatecommunity.com" class="contact-email">locate@locatecommunity.com</a>
+        <div class="contact-sub">Subject: Account support</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">Account appeal</div>
+        <a href="mailto:locate@locatecommunity.com" class="contact-email">locate@locatecommunity.com</a>
+        <div class="contact-sub">Subject: Account Appeal · Reply within 14 days</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">Data / privacy request</div>
+        <a href="mailto:locate@locatecommunity.com" class="contact-email">locate@locatecommunity.com</a>
+        <div class="contact-sub">Subject: Data Request · Reply within 30 days</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-label">Safety concern</div>
+        <a href="mailto:locate@locatecommunity.com" class="contact-email">locate@locatecommunity.com</a>
+        <div class="contact-sub">Subject: Safety concern · Urgent matters prioritised</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;margin-bottom:60px">
+      <div style="font-size:16px;font-weight:500;color:var(--ink);margin-bottom:16px">Send a message</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="field"><label>Your name</label><input id="c-name" type="text" placeholder="Full name"></div>
+        <div class="field"><label>Email</label><input id="c-email" type="email" placeholder="you@email.com"></div>
+        <div class="field">
+          <label>Subject</label>
+          <select id="c-subject">
+            <option>General question</option>
+            <option>Advertising enquiry</option>
+            <option>Account support</option>
+            <option>Account Appeal</option>
+            <option>Data Request</option>
+            <option>Safety concern</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Message</label><textarea id="c-msg" placeholder="How can we help?"></textarea></div>
+        <button onclick="submitContact()" style="align-self:flex-start;padding:12px 28px;background:var(--sage);border:none;border-radius:100px;font-size:14px;font-weight:600;color:#D8EDE7;cursor:pointer;font-family:inherit">Send message</button>
+      </div>
+    </div>
+  </div>
+  <div class="pub-footer">
+    <div class="pub-footer-inner">
+      <div class="pub-footer-logo">locate</div>
+      <div class="pub-footer-links">
+        <a onclick="showPub('home')">Home</a>
+        <a onclick="showPub('privacy')">Privacy</a>
+        <a onclick="showPub('terms')">Terms</a>
+      </div>
+      <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY POLICY -->
+<div class="pub-page" id="pub-privacy">
+  <div class="legal-wrap">
+    <div style="font-style:italic;font-size:20px;font-weight:300;color:var(--sage-l);margin-bottom:6px">locate</div>
+    <h1>Privacy Policy</h1>
+    <div class="legal-date">Last updated: 17 May 2026 · Effective: 17 May 2026</div>
+    <div class="legal-summary"><p><strong>Plain-English summary:</strong> Locate is a travel, navigation, and social community app. Your map and trip data stays on your device. Your social profile, posts, stories, and messages are stored on our secure servers. We show paid advertisements in the social feed. We never sell your personal data.</p></div>
+    <h2>1. Who We Are</h2>
+    <p>Locate is developed and operated by <strong>Balo Services</strong>. Contact: <a href="mailto:locate@locatecommunity.com">locate@locatecommunity.com</a></p>
+    <h2>2. Age Requirements</h2>
+    <div class="age-box"><p><strong>Minimum age:</strong><br>• <strong>13 years old</strong> — most countries worldwide<br>• <strong>16 years old</strong> — Australia, South Korea, Germany, Austria, France, Belgium, Denmark, Netherlands, Norway, Finland</p></div>
+    <p>By creating an account you confirm you meet the minimum age for your country. We collect your date of birth and country at registration and enforce the minimum age automatically.</p>
+    <h2>3. What Data We Collect</h2>
+    <h3>Map and navigation (stored on device only)</h3>
+    <table><tr><th>Data</th><th>Why</th><th>Where</th></tr>
+    <tr><td>Precise location (foreground)</td><td>Show position, record trail, guide to saved places</td><td>Your device only</td></tr>
+    <tr><td>Precise location (background, optional)</td><td>Continue recording trail with screen off</td><td>Your device only</td></tr>
+    <tr><td>Trip data</td><td>Build a map of your walk for replay and return navigation</td><td>Your device only</td></tr>
+    <tr><td>Saved places, photos, reminders</td><td>Store your landmarks and notifications</td><td>Your device only</td></tr></table>
+    <h3>Social features (stored on our servers)</h3>
+    <table><tr><th>Data</th><th>Why</th><th>Where</th></tr>
+    <tr><td>Username, display name, bio, profile photo</td><td>Your public profile</td><td>Locate servers</td></tr>
+    <tr><td>Email address</td><td>Login and service communications</td><td>Locate servers (encrypted)</td></tr>
+    <tr><td>Date of birth and country</td><td>Enforce minimum age</td><td>Locate servers (encrypted)</td></tr>
+    <tr><td>Password</td><td>Secure login</td><td>Locate servers (hashed)</td></tr>
+    <tr><td>Posts, photos, videos</td><td>Display your content in the feed</td><td>Locate servers + CDN</td></tr>
+    <tr><td>Stories</td><td>Show to followers — auto-deleted after 24h</td><td>Locate servers</td></tr>
+    <tr><td>Comments, reactions, follows</td><td>Community interaction</td><td>Locate servers</td></tr>
+    <tr><td>Direct messages</td><td>Private communication</td><td>Locate servers (encrypted in transit)</td></tr>
+    <tr><td>Ad interaction data</td><td>Deliver and measure paid ads</td><td>Locate servers (anonymous counts)</td></tr></table>
+    <h2>4. Background Location</h2>
+    <p>Used solely for trail recording when screen is off. A persistent notification is shown while active. You can decline or revoke at any time in device Settings → Apps → Locate → Permissions.</p>
+    <h2>5. Advertisements</h2>
+    <p>Locate displays paid advertisements in the social feed, clearly labelled "Sponsored." We use only your profile country for targeting — no behavioural profiling, no third-party ad networks, no tracking pixels. Ads are not shown in the map and navigation section.</p>
+    <h2>6. Third-Party Services</h2>
+    <table><tr><th>Service</th><th>Purpose</th><th>Data shared</th></tr>
+    <tr><td>OSRM / OpenStreetMap</td><td>Walking route calculation</td><td>Start and end coordinates only</td></tr>
+    <tr><td>Google Maps SDK</td><td>Map tile rendering</td><td>Standard tile requests</td></tr>
+    <tr><td>Stripe</td><td>Advertiser payments</td><td>Advertiser billing only — never user data</td></tr>
+    <tr><td>Cloudflare R2</td><td>Media hosting</td><td>Media files you post</td></tr>
+    <tr><td>Resend</td><td>Service emails</td><td>Your email address</td></tr></table>
+    <h2>7. Your Rights</h2>
+    <p>You can edit your profile, delete posts, delete your account, withdraw location permission, and request a copy of your data at any time. Email <a href="mailto:locate@locatecommunity.com">locate@locatecommunity.com</a> — we respond within 30 days.</p>
+    <h2>8. Children's Privacy</h2>
+    <p>The map and navigation features contain no advertisements and store all data on device only. Social features are available to users meeting the minimum age. Parents who believe a child has created an account should email <a href="mailto:locate@locatecommunity.com">locate@locatecommunity.com</a> immediately.</p>
+    <h2>9. Contact</h2>
+    <p>Balo Services · <a href="mailto:locate@locatecommunity.com">locate@locatecommunity.com</a></p>
+  </div>
+  <div class="pub-footer">
+    <div class="pub-footer-inner">
+      <div class="pub-footer-logo">locate</div>
+      <div class="pub-footer-links">
+        <a onclick="showPub('home')">Home</a>
+        <a onclick="showPub('terms')">Terms of Use</a>
+        <a onclick="showPub('contact')">Contact</a>
+      </div>
+      <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- TERMS OF USE -->
+<div class="pub-page" id="pub-terms">
+  <div class="legal-wrap">
+    <div style="font-style:italic;font-size:20px;font-weight:300;color:var(--sage-l);margin-bottom:6px">locate</div>
+    <h1>Terms of Use</h1>
+    <div class="legal-date">Last updated: 17 May 2026 · Effective: 17 May 2026</div>
+    <div class="legal-summary"><p><strong>Plain-English summary:</strong> By using Locate you agree to these terms. Be respectful, be honest about your age, post only content you own or have permission to share, and do not use Locate to harm, harass, or deceive other people.</p></div>
+    <h2>1. Acceptance of Terms</h2>
+    <p>By downloading or using Locate you agree to these Terms of Use and our <a onclick="showPub('privacy')" href="javascript:void(0)">Privacy Policy</a>. These terms form a legal agreement between you and Balo Services.</p>
+    <h2>2. Age Requirements</h2>
+    <div class="age-box"><p><strong>Minimum age to create an account:</strong><br>• <strong>13 years old</strong> in most countries worldwide<br>• <strong>16 years old</strong> in Australia, South Korea, Germany, Austria, France, Belgium, Denmark, Netherlands, Norway, and Finland</p></div>
+    <p>You must provide your real date of birth during registration. Providing a false date of birth is a violation of these terms and will result in immediate account deletion.</p>
+    <h2>3. Your Account</h2>
+    <ul><li>Provide accurate information including your real date of birth and country</li><li>Keep your password confidential — do not share your login</li><li>You are responsible for all activity under your account</li><li>You may only create one account — creating multiple accounts to evade a suspension is prohibited</li></ul>
+    <h2>4. Community Guidelines</h2>
+    <p>Locate is designed to be safe and welcoming for users of all ages.</p>
+    <h3>You may post:</h3>
+    <ul><li>Photos, videos, and stories from your travels and explorations</li><li>Tips, recommendations, and information about destinations</li><li>Questions and discussions about travel and relocation</li><li>Content that is kind, honest, and respectful</li></ul>
+    <div class="rule-box"><p>You must never post content that:</p>
+    <ul><li>Contains nudity, sexual content, or anything sexually suggestive</li><li>Depicts graphic violence, gore, or self-harm</li><li>Harasses, bullies, threatens, or targets another person</li><li>Promotes hatred on the basis of race, ethnicity, religion, gender, or other protected characteristic</li><li>Is spam, a scam, or deliberately misleading</li><li>Advertises adult services, illegal goods, or controlled substances</li><li>Contains links to adult websites, phishing sites, or malware</li><li>Infringes copyright, trademark, or privacy rights of another person</li><li>Impersonates another person or organisation</li><li>Is directed at or designed to exploit children in any way</li></ul></div>
+    <h2>5. Enforcement — Warnings and Bans</h2>
+    <ol><li><strong>Strike 1</strong> — Warning issued. Content removed. Email notification sent.</li><li><strong>Strike 2</strong> — Second warning. Content removed. Account flagged for review.</li><li><strong>Strike 3</strong> — Account permanently suspended. Email blocked from re-registration.</li></ol>
+    <p>For severe violations — including child safety violations and threats of violence — we reserve the right to permanently ban an account immediately without prior warning.</p>
+    <p>To appeal a moderation decision email <a href="mailto:locate@locatecommunity.com">locate@locatecommunity.com</a> with subject "Account Appeal" — we respond within 14 days.</p>
+    <h2>6. Advertisements</h2>
+    <p>Locate displays paid advertisements in the social feed clearly labelled "Sponsored." Advertisers agree to our Advertiser Terms. We reserve the right to reject or remove any advertisement that violates our guidelines.</p>
+    <h2>7. Disclaimer</h2>
+    <p>Locate is an aid to exploration — always use your own judgement when navigating, particularly in remote areas. Do not rely solely on Locate for safety-critical navigation.</p>
+    <h2>8. Governing Law</h2>
+    <p>These terms are governed by the laws of England and Wales.</p>
+    <h2>9. Contact</h2>
+    <p>Balo Services · <a href="mailto:locate@locatecommunity.com">locate@locatecommunity.com</a></p>
+  </div>
+  <div class="pub-footer">
+    <div class="pub-footer-inner">
+      <div class="pub-footer-logo">locate</div>
+      <div class="pub-footer-links">
+        <a onclick="showPub('home')">Home</a>
+        <a onclick="showPub('privacy')">Privacy Policy</a>
+        <a onclick="showPub('contact')">Contact</a>
+      </div>
+      <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ADMIN LOGIN
+══════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">locate admin</div>
+    <div class="login-sub">Administrator panel — authorised access only</div>
+    <div class="error-msg" id="login-error"></div>
+    <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="admin@locatecommunity.com"></div>
+    <div class="field"><label>Password</label><input type="password" id="login-password" placeholder="••••••••"></div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign in</button>
+    <div style="text-align:center;margin-top:16px">
+      <a href="javascript:void(0)" onclick="showPub('home')" style="font-size:13px;color:var(--ink3);text-decoration:none">← Back to Locate</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ADMIN APP
+══════════════════════════════════════════ -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">locate admin</div>
+    <div class="nav-section">Overview</div>
+    <button class="nav-item active" onclick="showPage('dashboard',event)"><span class="icon">📊</span>Dashboard</button>
+    <button class="nav-item" onclick="showPage('reports',event)"><span class="icon">🚩</span>Reports<span class="nav-badge" id="reports-badge" style="display:none"></span></button>
+    <div class="nav-section">Content</div>
+    <button class="nav-item" onclick="showPage('posts',event)"><span class="icon">🖼</span>Posts</button>
+    <button class="nav-item" onclick="showPage('stories',event)"><span class="icon">⭕</span>Stories</button>
+    <button class="nav-item" onclick="showPage('comments',event)"><span class="icon">💬</span>Comments</button>
+    <div class="nav-section">Community</div>
+    <button class="nav-item" onclick="showPage('users',event)"><span class="icon">👤</span>Users</button>
+    <button class="nav-item" onclick="showPage('groups',event)"><span class="icon">👥</span>Groups</button>
+    <div class="nav-section">Revenue</div>
+    <button class="nav-item" onclick="showPage('ads',event)"><span class="icon">📢</span>Ads<span class="nav-badge" id="ads-badge" style="display:none"></span></button>
+    <div class="nav-section">Tools</div>
+    <button class="nav-item" onclick="showPage('email',event)"><span class="icon">✉️</span>Email users</button>
+    <button class="nav-item" onclick="showPage('audit',event)"><span class="icon">📋</span>Audit log</button>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" id="sidebar-user"></div>
+      <button class="btn-logout" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Overview of Locate activity</div>
+      <div class="stats-grid" id="stats-grid"><div class="stat-card"><span class="spinner"></span></div></div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">Recent flagged content</span></div>
+        <table><thead><tr><th>Type</th><th>Reason</th><th>Reported by</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody id="recent-flags-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span></td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="page" id="page-reports">
+      <div class="page-title">Content reports</div>
+      <div class="page-sub">Every report submitted by users</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="btn btn-neutral" onclick="loadReports('open')" id="filter-open">Open</button>
+        <button class="btn btn-neutral" onclick="loadReports('reviewing')" id="filter-reviewing">Reviewing</button>
+        <button class="btn btn-neutral" onclick="loadReports('resolved')" id="filter-resolved">Resolved</button>
+        <button class="btn btn-neutral" onclick="loadReports('all')" id="filter-all">All</button>
+      </div>
+      <div id="reports-list"><div style="color:var(--ink3);padding:40px;text-align:center"><span class="spinner"></span></div></div>
+    </div>
+    <div class="page" id="page-posts">
+      <div class="page-title">Posts</div><div class="page-sub">All posts — remove content that violates guidelines</div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">All posts</span>
+          <input class="search-input" placeholder="Search posts…" oninput="searchPosts(this.value)">
+          <select style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--ink);font-size:13px;font-family:inherit" onchange="filterPosts(this.value)">
+            <option value="all">All statuses</option><option value="approved">Approved</option><option value="flagged">Flagged</option><option value="removed">Removed</option>
+          </select>
+        </div>
+        <table><thead><tr><th>Author</th><th>Content</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody id="posts-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span></td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="page" id="page-stories">
+      <div class="page-title">Stories</div><div class="page-sub">Active stories — expire after 24 hours automatically</div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">Active stories</span></div>
+        <table><thead><tr><th>Author</th><th>Caption</th><th>Location</th><th>Relocation</th><th>Scan</th><th>Actions</th></tr></thead>
+        <tbody id="stories-body"><tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="page" id="page-comments">
+      <div class="page-title">Comments</div><div class="page-sub">Remove comments that violate guidelines</div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">Comments</span>
+          <select style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--ink);font-size:13px;font-family:inherit" onchange="filterComments(this.value)">
+            <option value="all">All</option><option value="flagged">Flagged</option><option value="removed">Removed</option>
+          </select>
+        </div>
+        <table><thead><tr><th>Author</th><th>Comment</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody id="comments-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span></td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="page" id="page-users">
+      <div class="page-title">Users</div><div class="page-sub">Manage accounts — warn, suspend, ban, or permanently remove</div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">All users</span>
+          <input class="search-input" placeholder="Search name, email, username…" oninput="searchUsers(this.value)" id="user-search">
+          <select style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--ink);font-size:13px;font-family:inherit" onchange="filterUsers(this.value)">
+            <option value="all">All users</option><option value="active">Active</option><option value="banned">Banned</option><option value="warned">Warned</option>
+          </select>
+        </div>
+        <table><thead><tr><th>User</th><th>Email</th><th>Country</th><th>Joined</th><th>Strikes</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="users-body"><tr class="loading-row"><td colspan="7"><span class="spinner"></span></td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="page" id="page-groups">
+      <div class="page-title">Groups</div><div class="page-sub">Monitor and dissolve groups that violate guidelines</div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">All groups</span><input class="search-input" placeholder="Search groups…" oninput="searchGroups(this.value)"></div>
+        <table><thead><tr><th>Group</th><th>Owner</th><th>Type</th><th>Members</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="groups-body"><tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="page" id="page-ads">
+      <div class="page-title">Advertisements</div><div class="page-sub">Review, approve, and manage paid ads</div>
+      <div class="stats-grid" id="ads-stats-grid"><div class="stat-card"><span class="spinner"></span></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="btn btn-neutral" onclick="loadAds('pending')"  id="ads-filter-pending">Pending</button>
+        <button class="btn btn-neutral" onclick="loadAds('active')"   id="ads-filter-active">Active</button>
+        <button class="btn btn-neutral" onclick="loadAds('rejected')" id="ads-filter-rejected">Rejected</button>
+        <button class="btn btn-neutral" onclick="loadAds('ended')"    id="ads-filter-ended">Ended</button>
+        <button class="btn btn-neutral" onclick="loadAds(null)"       id="ads-filter-all">All</button>
+      </div>
+      <div id="ads-list"><div style="color:var(--ink3);padding:40px;text-align:center"><span class="spinner"></span></div></div>
+    </div>
+    <div class="page" id="page-email">
+      <div class="page-title">Email users</div><div class="page-sub">Send emails directly from this panel</div>
+      <div style="max-width:600px">
+        <div class="table-wrap" style="margin-bottom:20px">
+          <div class="table-header"><span class="table-title">Compose email</span></div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div class="field"><label>To</label>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <select id="email-to-type" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--ink);font-size:13px;flex:1;font-family:inherit" onchange="toggleEmailTo()">
+                  <option value="specific">Specific user</option><option value="all">All users</option><option value="banned">All banned users</option><option value="warned">All warned users</option>
+                </select>
+                <input id="email-to-username" class="search-input" placeholder="Username or email" style="flex:2">
+              </div>
+            </div>
+            <div class="field"><label>Subject</label><input type="text" id="email-subject" placeholder="e.g. Important notice about your Locate account"></div>
+            <div class="field"><label>Message</label><textarea id="email-body" style="min-height:160px" placeholder="Write your message here."></textarea></div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-sage" onclick="sendEmail()" style="padding:12px 28px;border-radius:100px;font-size:14px">Send email</button>
+              <button class="btn btn-neutral" onclick="previewEmail()" style="padding:12px 20px;border-radius:100px;font-size:14px">Preview</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header"><span class="table-title">Email log</span></div>
+          <table><thead><tr><th>To</th><th>Subject</th><th>Sent by</th><th>Date</th></tr></thead>
+          <tbody id="email-log-body"><tr class="empty-row"><td colspan="4">No emails sent yet</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-audit">
+      <div class="page-title">Audit log</div><div class="page-sub">Every admin action recorded permanently</div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">All actions</span></div>
+        <table><thead><tr><th>Action</th><th>Target</th><th>Done by</th><th>Detail</th><th>Date</th></tr></thead>
+        <tbody id="audit-body"><tr class="loading-row"><td colspan="5"><span class="spinner"></span></td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-ban">
+  <div class="modal">
+    <div class="modal-title">Ban user</div>
+    <div class="modal-sub">This user will be immediately suspended. Their content will be hidden from all feeds. Their email will be permanently blocked from creating a new account.</div>
+    <div class="field"><label>Reason (shown to user in suspension email)</label><textarea id="ban-reason" placeholder="e.g. Repeated posting of adult content after warnings."></textarea></div>
+    <div style="background:var(--red-l);border:1px solid rgba(163,45,45,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#F08080;margin-bottom:4px">⚠️ An automated suspension email will be sent to the user.</div>
+    <div class="modal-actions"><button class="btn btn-neutral" onclick="closeModal('modal-ban')">Cancel</button><button class="btn btn-danger" onclick="confirmBan()">Ban this user</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-strike">
+  <div class="modal">
+    <div class="modal-title">Issue a warning</div>
+    <div class="modal-sub">A warning will be sent to the user. At 3 strikes the account is automatically suspended.</div>
+    <div class="field"><label>Reason</label><textarea id="strike-reason" placeholder="e.g. Posted content that violates community guidelines."></textarea></div>
+    <div class="modal-actions"><button class="btn btn-neutral" onclick="closeModal('modal-strike')">Cancel</button><button class="btn btn-warn" onclick="confirmStrike()">Issue warning</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-delete-user">
+  <div class="modal">
+    <div class="modal-title">Permanently delete account</div>
+    <div class="modal-sub" style="color:#F08080">This cannot be undone. All content will be permanently deleted. Their email will be blocked from Locate forever.</div>
+    <div class="field"><label>Type DELETE to confirm</label><input type="text" id="delete-confirm-input" placeholder="DELETE"></div>
+    <div class="modal-actions"><button class="btn btn-neutral" onclick="closeModal('modal-delete-user')">Cancel</button><button class="btn btn-danger" onclick="confirmDeleteUser()">Permanently delete</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-email-preview">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-title">Email preview</div>
+    <div id="email-preview-content" style="background:rgba(255,255,255,.04);border-radius:10px;padding:16px;margin:16px 0;font-size:14px;color:var(--ink2);line-height:1.7"></div>
+    <div class="modal-actions"><button class="btn btn-neutral" onclick="closeModal('modal-email-preview')">Edit</button><button class="btn btn-sage" onclick="sendEmailConfirmed()">Send now</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-user-detail">
+  <div class="modal" style="max-width:560px">
+    <div id="user-detail-content"></div>
+    <div class="modal-actions"><button class="btn btn-neutral" onclick="closeModal('modal-user-detail')">Close</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = window.LOCATE_API_URL || localStorage.getItem("locate_api_url") || "http://localhost:4000";
+let token = localStorage.getItem("locate_admin_token") || "";
+let _targetUserId = null, _targetUserName = "";
+
+// ── PUBLIC SITE ────────────────────────────────────────────────────────────────
+function showPub(name) {
+  document.querySelectorAll(".pub-page").forEach(p => p.classList.remove("active"));
+  document.getElementById("pub-"+name).classList.add("active");
+  document.getElementById("pub-nav").style.display = "flex";
+  document.getElementById("login-screen").classList.remove("active");
+  document.getElementById("app").classList.remove("active");
+  window.scrollTo(0,0);
+}
+
+function showAdminLogin() {
+  document.querySelectorAll(".pub-page").forEach(p => p.classList.remove("active"));
+  document.getElementById("pub-nav").style.display = "none";
+  document.getElementById("login-screen").classList.add("active");
+}
+
+function goToAdPortal() {
+  window.open("advertiser/index.html","_blank");
+}
+
+function submitIosEmail() {
+  const email = document.getElementById("ios-email").value;
+  if (!email) return;
+  toast("Thanks! We will notify you when iOS is ready.", "success");
+  document.getElementById("ios-email").value = "";
+}
+
+function submitContact() {
+  const name = document.getElementById("c-name").value;
+  const email = document.getElementById("c-email").value;
+  const subject = document.getElementById("c-subject").value;
+  const msg = document.getElementById("c-msg").value;
+  if (!name || !email || !msg) { toast("Please fill in all fields.", "error"); return; }
+  window.location.href = `mailto:locate@locatecommunity.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent("From: "+name+" <"+email+">\n\n"+msg)}`;
+}
+
+// ── AUTH ───────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const btn = document.getElementById("login-btn");
+  const err = document.getElementById("login-error");
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  if (!email || !password) { err.textContent="Please enter email and password."; err.style.display="block"; return; }
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Signing in…';
+  err.style.display="none";
+  try {
+    const res = await fetch(API+"/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password})});
+    const data = await res.json().catch(()=>({}));
+    if (!res.ok||!data.token) { err.textContent=data.error||`Server returned ${res.status}.`; err.style.display="block"; btn.disabled=false; btn.textContent="Sign in"; return; }
+    if (data.user.role!=="admin") { err.textContent="This account does not have admin access."; err.style.display="block"; btn.disabled=false; btn.textContent="Sign in"; return; }
+    token=data.token; localStorage.setItem("locate_admin_token",token);
+    document.getElementById("sidebar-user").textContent=data.user.display_name||data.user.username;
+    document.getElementById("login-screen").classList.remove("active");
+    document.getElementById("pub-nav").style.display="none";
+    document.getElementById("app").classList.add("active");
+    loadDashboard(); loadReportsBadge();
+  } catch(e) { err.textContent="Could not reach server at: "+API+" — "+e.message; err.style.display="block"; btn.disabled=false; btn.textContent="Sign in"; }
+}
+
+function doLogout() {
+  localStorage.removeItem("locate_admin_token"); token="";
+  document.getElementById("app").classList.remove("active");
+  document.getElementById("pub-nav").style.display="flex";
+  showPub("home");
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  if (token) {
+    const res = await fetch(API+"/auth/me",{headers:{"Authorization":"Bearer "+token}}).then(r=>r.json()).catch(()=>null);
+    if (res?.user?.role==="admin") {
+      document.getElementById("sidebar-user").textContent=res.user.display_name||res.user.username;
+      document.getElementById("pub-nav").style.display="none";
+      document.getElementById("app").classList.add("active");
+      loadDashboard(); loadReportsBadge();
+    } else { token=""; localStorage.removeItem("locate_admin_token"); }
+  }
+  document.getElementById("login-password").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+});
+
+// ── HELPERS ────────────────────────────────────────────────────────────────────
+async function api(method,path,body){
+  const opts={method,headers:{"Content-Type":"application/json","Authorization":"Bearer "+token}};
+  if(body) opts.body=JSON.stringify(body);
+  const res=await fetch(API+path,opts);
+  if(res.status===401){doLogout();return null;}
+  return res.json().catch(()=>({}));
+}
+function toast(msg,type=""){const el=document.getElementById("toast");el.textContent=msg;el.className="show "+type;setTimeout(()=>el.className="",3000);}
+function openModal(id){document.getElementById(id).classList.add("open");}
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+function formatDate(iso){if(!iso)return"—";return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}
+function formatDateShort(iso){if(!iso)return"—";return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});}
+function avatarHtml(u){if(u&&u.avatar_url)return`<img class="avatar-img" src="${u.avatar_url}" onerror="this.style.display='none'">`;const i=(u&&(u.display_name||u.username))?(u.display_name||u.username)[0].toUpperCase():"?";return`<span class="avatar-sm">${i}</span>`;}
+function statusBadge(s){const m={approved:"green",active:"green",pending:"amber",flagged:"amber",removed:"red",banned:"red",warned:"amber",dissolved:"red"};return`<span class="badge badge-${m[s]||"gray"}">${s}</span>`;}
+function truncate(s,n=60){return s&&s.length>n?s.slice(0,n)+"…":(s||"—");}
+
+// ── ADMIN NAVIGATION ───────────────────────────────────────────────────────────
+function showPage(name, e) {
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById("page-"+name).classList.add("active");
+  if(e&&e.currentTarget) e.currentTarget.classList.add("active");
+  const loaders={dashboard:loadDashboard,reports:()=>loadReports("open"),posts:loadPosts,stories:loadStories,comments:loadComments,users:loadUsers,groups:loadGroups,email:loadEmailLog,audit:loadAudit,ads:()=>loadAds("pending")};
+  if(loaders[name]) loaders[name]();
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────────────
+async function loadDashboard(){
+  const data=await api("GET","/api/admin/stats"); if(!data)return;
+  const g=document.getElementById("stats-grid");
+  g.innerHTML=`<div class="stat-card ${data.open_reports>5?"urgent":""}"><div class="stat-num ${data.open_reports>5?"red":""}">${data.open_reports}</div><div class="stat-lbl">Open reports</div></div>
+  <div class="stat-card"><div class="stat-num">${data.active_users}</div><div class="stat-lbl">Active users (24h)</div></div>
+  <div class="stat-card"><div class="stat-num">${data.posts_today}</div><div class="stat-lbl">Posts today</div></div>
+  <div class="stat-card ${data.flagged_today>5?"warn":""}"><div class="stat-num ${data.flagged_today>5?"amber":""}">${data.flagged_today}</div><div class="stat-lbl">Auto-flagged today</div></div>
+  <div class="stat-card"><div class="stat-num">${data.total_banned||0}</div><div class="stat-lbl">Banned accounts</div></div>
+  <div class="stat-card"><div class="stat-num">${data.active_groups||0}</div><div class="stat-lbl">Active groups</div></div>`;
+  const r=await api("GET","/api/admin/reports?status=open&limit=5");
+  const tb=document.getElementById("recent-flags-body");
+  if(!r||!r.reports?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="5">No open reports</td></tr>`;return;}
+  tb.innerHTML=r.reports.map(rep=>`<tr><td>${rep.content_type}</td><td><span class="badge badge-red">${rep.reason?.replace(/_/g," ")}</span></td><td>${rep.reporter_display_name||"Unknown"}</td><td>${formatDateShort(rep.created_at)}</td><td><button class="btn btn-sm btn-warn" onclick="showPage('reports',{currentTarget:document.querySelectorAll('.nav-item')[1]});loadReports('open')">Review →</button></td></tr>`).join("");
+}
+
+// ── REPORTS ────────────────────────────────────────────────────────────────────
+async function loadReportsBadge(){const r=await api("GET","/api/admin/reports?status=open&limit=99");const b=document.getElementById("reports-badge");if(r?.reports){b.textContent=r.reports.length||"";b.style.display=r.reports.length?"":"none";}}
+async function loadReports(status="open"){
+  ["open","reviewing","resolved","all"].forEach(s=>{const el=document.getElementById("filter-"+s);if(el)el.style.background=s===status?"var(--sage)":"";});
+  const c=document.getElementById("reports-list");
+  c.innerHTML=`<div style="color:var(--ink3);padding:40px;text-align:center"><span class="spinner"></span></div>`;
+  const data=await api("GET",`/api/admin/reports?status=${status}&limit=50`);
+  if(!data||!data.reports?.length){c.innerHTML=`<div style="color:var(--ink3);padding:40px;text-align:center">No ${status} reports</div>`;return;}
+  c.innerHTML=data.reports.map(r=>`<div class="report-card"><div class="report-header"><span class="report-reason">${r.reason?.replace(/_/g," ")||"unknown"}</span><span class="report-meta">${r.content_type} · reported by <b>${r.reporter_display_name||r.reporter_username}</b> · ${formatDateShort(r.created_at)}</span>${statusBadge(r.status)}</div>${r.detail?`<div class="report-detail">${r.detail}</div>`:""} ${r.status==="open"||r.status==="reviewing"?`<div class="btn-row"><button class="btn btn-sm btn-neutral" onclick="resolveReport('${r.id}','dismiss')">Dismiss</button><button class="btn btn-sm btn-warn" onclick="resolveReport('${r.id}','remove_content')">Remove content</button><button class="btn btn-sm btn-warn" onclick="openStrikeFromReport('${r.id}')">Warn user</button><button class="btn btn-sm btn-danger" onclick="openBanFromReport('${r.id}')">Ban user</button></div>`:""}</div>`).join("");
+}
+async function resolveReport(id,action){const res=await api("POST",`/api/admin/reports/${id}/resolve`,{action});if(res){toast(action==="dismiss"?"Report dismissed":"Action taken","success");loadReports("open");loadReportsBadge();}}
+let _reportIdForAction=null;
+function openBanFromReport(id){_reportIdForAction=id;document.getElementById("ban-reason").value="";openModal("modal-ban");}
+function openStrikeFromReport(id){_reportIdForAction=id;document.getElementById("strike-reason").value="";openModal("modal-strike");}
+
+// ── POSTS ──────────────────────────────────────────────────────────────────────
+let postsFilter="all",postsSearch="";
+async function loadPosts(){
+  const tb=document.getElementById("posts-body");tb.innerHTML=`<tr class="loading-row"><td colspan="5"><span class="spinner"></span></td></tr>`;
+  const p=new URLSearchParams({limit:50,...(postsFilter!=="all"?{status:postsFilter}:{}),...(postsSearch?{q:postsSearch}:{})});
+  const data=await api("GET","/api/admin/posts?"+p);
+  if(!data?.posts?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="5">No posts found</td></tr>`;return;}
+  tb.innerHTML=data.posts.map(p=>`<tr><td>${avatarHtml(p)} ${p.display_name||p.username}</td><td>${p.media_urls?.length?`<img src="${p.media_urls[0]}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:6px">`:""} ${truncate(p.body,50)}</td><td>${statusBadge(p.moderation_status)}</td><td>${formatDateShort(p.created_at)}</td><td><div class="btn-row">${p.moderation_status!=="removed"?`<button class="btn btn-sm btn-danger" onclick="removePost('${p.id}')">Remove</button>`:""}<button class="btn btn-sm btn-warn" onclick="openBanUserById('${p.user_id}','${p.display_name}')">Ban author</button></div></td></tr>`).join("");
+}
+function searchPosts(v){postsSearch=v;clearTimeout(window._pt);window._pt=setTimeout(loadPosts,400);}
+function filterPosts(v){postsFilter=v;loadPosts();}
+async function removePost(id){if(!confirm("Remove this post?"))return;await api("POST",`/api/admin/reports/post/${id}/remove`,{action:"remove_content"});toast("Post removed","success");loadPosts();}
+
+// ── STORIES ────────────────────────────────────────────────────────────────────
+async function loadStories(){
+  const tb=document.getElementById("stories-body");tb.innerHTML=`<tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr>`;
+  const data=await api("GET","/api/admin/stories");
+  if(!data?.stories?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="6">No active stories</td></tr>`;return;}
+  tb.innerHTML=data.stories.map(s=>`<tr><td>${avatarHtml(s)} ${s.display_name}</td><td>${truncate(s.caption,50)}</td><td>${s.location_name||"—"}</td><td>${s.is_relocation_story?"<span class='badge badge-blue'>🌍 Yes</span>":"—"}</td><td>${statusBadge(s.scan_status)}</td><td><div class="btn-row">${s.media_url?`<button class="btn btn-sm btn-neutral" onclick="window.open('${s.media_url}')">View</button>`:""}<button class="btn btn-sm btn-danger" onclick="removeStory('${s.id}')">Remove</button></div></td></tr>`).join("");
+}
+async function removeStory(id){if(!confirm("Remove this story?"))return;await api("DELETE",`/api/admin/stories/${id}`);toast("Story removed","success");loadStories();}
+
+// ── COMMENTS ───────────────────────────────────────────────────────────────────
+let commentsFilter="all";
+async function loadComments(){
+  const tb=document.getElementById("comments-body");tb.innerHTML=`<tr class="loading-row"><td colspan="5"><span class="spinner"></span></td></tr>`;
+  const p=new URLSearchParams({limit:50,...(commentsFilter!=="all"?{status:commentsFilter}:{})});
+  const data=await api("GET","/api/admin/comments?"+p);
+  if(!data?.comments?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="5">No comments found</td></tr>`;return;}
+  tb.innerHTML=data.comments.map(c=>`<tr><td>${avatarHtml(c)} ${c.display_name}</td><td>${truncate(c.body)}</td><td>${statusBadge(c.moderation_status)}</td><td>${formatDateShort(c.created_at)}</td><td><div class="btn-row">${c.moderation_status!=="removed"?`<button class="btn btn-sm btn-danger" onclick="removeComment('${c.id}')">Remove</button>`:""}<button class="btn btn-sm btn-warn" onclick="openBanUserById('${c.user_id}','${c.display_name}')">Ban author</button></div></td></tr>`).join("");
+}
+function filterComments(v){commentsFilter=v;loadComments();}
+async function removeComment(id){if(!confirm("Remove this comment?"))return;await api("PATCH",`/api/admin/comments/${id}/remove`);toast("Comment removed","success");loadComments();}
+
+// ── USERS ──────────────────────────────────────────────────────────────────────
+let usersFilter="all",usersSearch="";
+async function loadUsers(){
+  const tb=document.getElementById("users-body");tb.innerHTML=`<tr class="loading-row"><td colspan="7"><span class="spinner"></span></td></tr>`;
+  const p=new URLSearchParams({limit:100,...(usersSearch?{q:usersSearch}:{}),...(usersFilter==="banned"?{is_banned:"true"}:usersFilter==="active"?{is_banned:"false"}:{})});
+  const data=await api("GET","/api/admin/users?"+p);
+  if(!data?.users?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="7">No users found</td></tr>`;return;}
+  tb.innerHTML=data.users.map(u=>`<tr><td style="cursor:pointer" onclick="viewUserDetail('${u.id}')">${avatarHtml(u)}<b>${u.display_name||u.username}</b><br><small style="color:var(--ink3)">@${u.username}</small></td><td><a href="mailto:${u.email}" style="color:var(--sage-l)">${u.email}</a></td><td>${u.country_code||"—"}</td><td>${formatDateShort(u.created_at)}</td><td style="text-align:center"><span style="color:${u.strike_count>0?"#F0C060":"var(--ink3)"};font-weight:600">${u.strike_count||0}</span></td><td>${u.is_banned?"<span class='badge badge-red'>Banned</span>":u.strike_count>=2?"<span class='badge badge-amber'>Warned</span>":"<span class='badge badge-green'>Active</span>"}</td><td><div class="btn-row">${!u.is_banned?`<button class="btn btn-sm btn-warn" onclick="openStrikeUser('${u.id}','${u.display_name||u.username}')">Warn</button><button class="btn btn-sm btn-danger" onclick="openBanUserById('${u.id}','${u.display_name||u.username}')">Ban</button>`:`<button class="btn btn-sm btn-success" onclick="unbanUser('${u.id}')">Unban</button>`}<button class="btn btn-sm btn-danger" onclick="openDeleteUser('${u.id}','${u.display_name||u.username}')">Delete</button></div></td></tr>`).join("");
+}
+function searchUsers(v){usersSearch=v;clearTimeout(window._ut);window._ut=setTimeout(loadUsers,400);}
+function filterUsers(v){usersFilter=v;loadUsers();}
+function openBanUserById(id,name){_targetUserId=id;_targetUserName=name;document.getElementById("ban-reason").value="";document.querySelector("#modal-ban .modal-title").textContent="Ban "+name;openModal("modal-ban");}
+function openStrikeUser(id,name){_targetUserId=id;_targetUserName=name;document.getElementById("strike-reason").value="";document.querySelector("#modal-strike .modal-title").textContent="Warn "+name;openModal("modal-strike");}
+function openDeleteUser(id,name){_targetUserId=id;_targetUserName=name;document.getElementById("delete-confirm-input").value="";document.querySelector("#modal-delete-user .modal-title").textContent="Delete "+name;openModal("modal-delete-user");}
+async function confirmBan(){const reason=document.getElementById("ban-reason").value.trim();if(!reason){alert("Please provide a reason.");return;}await api("PATCH",`/api/admin/users/${_targetUserId}/ban`,{ban_reason:reason});closeModal("modal-ban");toast(_targetUserName+" has been banned","success");loadUsers();loadDashboard();await api("POST","/api/admin/email",{to_user_id:_targetUserId,subject:"Your Locate account has been suspended",body:`Your account has been suspended.\n\nReason: ${reason}\n\nIf you believe this is a mistake, contact locate@locatecommunity.com`});}
+async function confirmStrike(){const reason=document.getElementById("strike-reason").value.trim();if(!reason){alert("Please provide a reason.");return;}await api("POST",`/api/admin/users/${_targetUserId}/strike`,{reason});closeModal("modal-strike");toast("Warning issued to "+_targetUserName,"success");loadUsers();}
+async function unbanUser(id){if(!confirm("Unban this user?"))return;await api("PATCH",`/api/admin/users/${id}/unban`);toast("User unbanned","success");loadUsers();}
+async function confirmDeleteUser(){const val=document.getElementById("delete-confirm-input").value;if(val!=="DELETE"){alert("Please type DELETE to confirm.");return;}await api("DELETE",`/api/admin/users/${_targetUserId}`);closeModal("modal-delete-user");toast("Account permanently deleted","success");loadUsers();}
+async function viewUserDetail(id){const data=await api("GET",`/api/admin/users/${id}/detail`);if(!data)return;const u=data.user;document.getElementById("user-detail-content").innerHTML=`<div class="modal-title">${u.display_name||u.username}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;font-size:13px"><div><div style="color:var(--ink3);margin-bottom:2px">Username</div>@${u.username}</div><div><div style="color:var(--ink3);margin-bottom:2px">Email</div>${u.email}</div><div><div style="color:var(--ink3);margin-bottom:2px">Country</div>${u.country_code||"Unknown"}</div><div><div style="color:var(--ink3);margin-bottom:2px">Joined</div>${formatDateShort(u.created_at)}</div><div><div style="color:var(--ink3);margin-bottom:2px">Last seen</div>${formatDateShort(u.last_seen_at)}</div><div><div style="color:var(--ink3);margin-bottom:2px">Strikes</div>${u.strike_count}</div><div><div style="color:var(--ink3);margin-bottom:2px">Posts</div>${u.post_count}</div><div><div style="color:var(--ink3);margin-bottom:2px">Status</div>${u.is_banned?"<span class='badge badge-red'>Banned</span>":"<span class='badge badge-green'>Active</span>"}</div></div>${u.ban_reason?`<div style="background:var(--red-l);border-radius:8px;padding:10px 14px;font-size:13px;color:#F08080;margin-bottom:12px">Ban reason: ${u.ban_reason}</div>`:""}<div style="margin-bottom:12px;font-size:12px;color:var(--ink3)">Bio: ${u.bio||"None"}</div><div class="btn-row"><button class="btn btn-sage btn-sm" onclick="closeModal('modal-user-detail');openBanUserById('${u.id}','${u.display_name||u.username}')">Ban</button><button class="btn btn-warn btn-sm" onclick="closeModal('modal-user-detail');openStrikeUser('${u.id}','${u.display_name||u.username}')">Warn</button><button class="btn btn-neutral btn-sm" onclick="prefillEmail('${u.id}','${u.email}')">Email user</button></div>`;openModal("modal-user-detail");}
+
+// ── GROUPS ─────────────────────────────────────────────────────────────────────
+let groupsSearch="";
+async function loadGroups(){
+  const tb=document.getElementById("groups-body");tb.innerHTML=`<tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr>`;
+  const data=await api("GET","/api/admin/groups"+(groupsSearch?"?q="+groupsSearch:""));
+  if(!data?.groups?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="6">No groups found</td></tr>`;return;}
+  tb.innerHTML=data.groups.map(g=>`<tr><td><b>${g.name}</b></td><td>@${g.owner_username}</td><td><span class="badge badge-gray">${g.group_type}</span></td><td>${g.member_count}</td><td>${statusBadge(g.moderation_status)}</td><td><div class="btn-row">${!g.is_dissolved?`<button class="btn btn-sm btn-danger" onclick="dissolveGroup('${g.id}','${g.name}')">Dissolve</button>`:"<span style='color:var(--ink3);font-size:12px'>Dissolved</span>"}</div></td></tr>`).join("");
+}
+function searchGroups(v){groupsSearch=v;clearTimeout(window._gt);window._gt=setTimeout(loadGroups,400);}
+async function dissolveGroup(id,name){const reason=prompt(`Reason for dissolving "${name}"?`);if(!reason)return;await api("DELETE",`/api/admin/groups/${id}`,{reason});toast("Group dissolved","success");loadGroups();}
+
+// ── ADS ─────────────────────────────────────────────────────────────────────────
+async function loadAds(status){
+  ["pending","active","rejected","ended","all"].forEach(s=>{const el=document.getElementById("ads-filter-"+s);if(el)el.style.background=s===(status||"all")?"var(--sage)":"";});
+  const stats=await api("GET","/api/admin/ads/stats");
+  if(stats){document.getElementById("ads-stats-grid").innerHTML=`<div class="stat-card ${stats.pending_approval>0?"warn":""}"><div class="stat-num ${stats.pending_approval>0?"amber":""}">${stats.pending_approval}</div><div class="stat-lbl">Pending approval</div></div><div class="stat-card"><div class="stat-num">${stats.active_ads}</div><div class="stat-lbl">Active ads</div></div><div class="stat-card"><div class="stat-num">$${Number(stats.total_revenue||0).toFixed(2)}</div><div class="stat-lbl">Total revenue</div></div><div class="stat-card"><div class="stat-num">${Number(stats.total_impressions||0).toLocaleString()}</div><div class="stat-lbl">Impressions</div></div><div class="stat-card"><div class="stat-num">${Number(stats.total_clicks||0).toLocaleString()}</div><div class="stat-lbl">Clicks</div></div>`;const b=document.getElementById("ads-badge");if(b){b.textContent=stats.pending_approval||"";b.style.display=stats.pending_approval>0?"":"none";}}
+  const c=document.getElementById("ads-list");c.innerHTML=`<div style="color:var(--ink3);padding:40px;text-align:center"><span class="spinner"></span></div>`;
+  const data=await api("GET",`/api/admin/ads${status?"?status="+status:""}`);
+  if(!data?.ads?.length){c.innerHTML=`<div style="color:var(--ink3);padding:40px;text-align:center">No ads found</div>`;return;}
+  c.innerHTML=data.ads.map(a=>`<div class="report-card" style="margin-bottom:14px"><div class="report-header" style="flex-wrap:wrap;gap:8px">${statusBadge(a.status)}<b style="color:var(--ink)">${a.business_name}</b><span class="report-meta">${a.contact_name} · ${a.advertiser_email}</span><span style="margin-left:auto;color:rgba(74,154,122,0.8);font-weight:600">$${a.amount_paid||a.price_usd} USD</span></div><div style="display:grid;grid-template-columns:${a.image_url?"160px 1fr":"1fr"};gap:16px;margin:12px 0;align-items:start">${a.image_url?`<img src="${a.image_url}" style="width:100%;height:100px;object-fit:cover;border-radius:10px;cursor:pointer" onclick="window.open('${a.image_url}')">`:""}<div><div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:4px">${a.headline}</div>${a.body?`<div style="font-size:13px;color:var(--ink2);margin-bottom:6px">${a.body}</div>`:""}<div style="font-size:12px;color:var(--ink3)">CTA: <b style="color:var(--sage-l)">${a.cta_label}</b> → <a href="${a.cta_url}" target="_blank" style="color:var(--sage-l)">${a.cta_url}</a></div>${a.target_country?`<div style="font-size:12px;color:var(--ink3);margin-top:4px">Target: ${a.target_city||""}${a.target_city&&a.target_country?", ":""}${a.target_country}</div>`:""}<div style="font-size:12px;color:var(--ink3);margin-top:4px">Package: ${a.package_name} · ${formatDateShort(a.paid_at)} → ${formatDateShort(a.ends_at)}</div>${a.status==="active"?`<div style="font-size:12px;margin-top:6px"><span style="color:#6DCF9A">${a.impression_count} impressions</span> · <span style="color:var(--sage-l)">${a.click_count} clicks</span></div>`:""}</div></div>${a.rejection_reason?`<div style="background:var(--red-l);border-radius:8px;padding:10px 14px;font-size:12px;color:#F08080;margin-bottom:10px">Rejection reason: ${a.rejection_reason}</div>`:""}<div class="btn-row">${a.status==="pending"?`<button class="btn btn-success" onclick="approveAd('${a.id}')">✓ Approve</button><button class="btn btn-danger" onclick="rejectAd('${a.id}')">✕ Reject</button>`:""}${a.status==="active"?`<button class="btn btn-warn" onclick="pauseAd('${a.id}')">Pause</button>`:""}</div></div>`).join("");
+}
+async function approveAd(id){if(!confirm("Approve this ad? It will go live immediately."))return;await api("PATCH",`/api/admin/ads/${id}/approve`);toast("Ad approved ✓","success");loadAds("pending");}
+async function rejectAd(id){const reason=prompt("Reason for rejection (emailed to advertiser):");if(!reason)return;await api("PATCH",`/api/admin/ads/${id}/reject`,{reason});toast("Ad rejected","success");loadAds("pending");}
+async function pauseAd(id){if(!confirm("Pause this ad?"))return;await api("PATCH",`/api/admin/ads/${id}/pause`);toast("Ad paused","success");loadAds("active");}
+
+// ── EMAIL ──────────────────────────────────────────────────────────────────────
+function toggleEmailTo(){const t=document.getElementById("email-to-type").value;document.getElementById("email-to-username").style.display=t==="specific"?"":"none";}
+function prefillEmail(userId,email){closeModal("modal-user-detail");document.getElementById("email-to-type").value="specific";document.getElementById("email-to-username").value=email;toggleEmailTo();}
+function previewEmail(){const subject=document.getElementById("email-subject").value;const body=document.getElementById("email-body").value;if(!subject||!body){toast("Please fill in subject and message","error");return;}document.getElementById("email-preview-content").innerHTML=`<b>Subject:</b> ${subject}<br><br>${body.replace(/\n/g,"<br>")}`;openModal("modal-email-preview");}
+async function sendEmail(){previewEmail();}
+async function sendEmailConfirmed(){closeModal("modal-email-preview");const toType=document.getElementById("email-to-type").value;const toUser=document.getElementById("email-to-username").value;const subject=document.getElementById("email-subject").value;const body=document.getElementById("email-body").value;const res=await api("POST","/api/admin/email",{to_type:toType,to_identifier:toUser,subject,body});if(res){toast("Email sent ✓","success");document.getElementById("email-subject").value="";document.getElementById("email-body").value="";loadEmailLog();}else toast("Failed to send","error");}
+async function loadEmailLog(){const data=await api("GET","/api/admin/email/log");const tb=document.getElementById("email-log-body");if(!data?.logs?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="4">No emails sent yet</td></tr>`;return;}tb.innerHTML=data.logs.map(e=>`<tr><td>${e.to_identifier||e.to_type||"—"}</td><td>${truncate(e.subject||"—",60)}</td><td>${e.sent_by_username||"admin"}</td><td>${formatDateShort(e.created_at)}</td></tr>`).join("");}
+
+// ── AUDIT ──────────────────────────────────────────────────────────────────────
+async function loadAudit(){const tb=document.getElementById("audit-body");tb.innerHTML=`<tr class="loading-row"><td colspan="5"><span class="spinner"></span></td></tr>`;const data=await api("GET","/api/admin/audit");if(!data?.logs?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="5">No audit records</td></tr>`;return;}tb.innerHTML=data.logs.map(l=>`<tr><td><span class="badge badge-gray">${l.action}</span></td><td>${l.target_type||"—"} ${l.target_id?`<small style="color:var(--ink3)">${l.target_id.slice(0,8)}…</small>`:""}</td><td>${l.actor_username||"system"}</td><td><small style="color:var(--ink3)">${JSON.stringify(l.detail||{})}</small></td><td>${formatDate(l.created_at)}</td></tr>`).join("");}
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".modal-overlay.open").forEach(m=>m.classList.remove("open"));});
+</script>
+</body>
+</html>
