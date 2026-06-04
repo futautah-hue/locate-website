@@ -544,6 +544,11 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div class="contact-sub">Subject: Data Request · Reply within 30 days</div>
       </div>
       <div class="contact-card">
+        <div class="contact-label">Delete my account</div>
+        <a onclick="showPub('delete-account')" href="/delete-account" class="contact-email">Request account deletion</a>
+        <div class="contact-sub">Permanent — processed within 30 days</div>
+      </div>
+      <div class="contact-card">
         <div class="contact-label">Safety concern</div>
         <a href="mailto:locate@locatecommunity.com" class="contact-email">locate@locatecommunity.com</a>
         <div class="contact-sub">Subject: Safety concern · Urgent matters prioritised</div>
@@ -579,6 +584,57 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <a onclick="showPub('home')">Home</a>
         <a onclick="showPub('privacy')">Privacy</a>
         <a onclick="showPub('terms')">Terms</a>
+      </div>
+      <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE ACCOUNT -->
+<div class="pub-page" id="pub-delete-account">
+  <div class="legal-wrap">
+    <div style="font-style:italic;font-size:20px;font-weight:300;color:var(--sage-l);margin-bottom:6px">locate</div>
+    <h1>Request Account Deletion</h1>
+    <div class="legal-date">Your data. Your choice.</div>
+    <div class="legal-summary"><p><strong>What happens when you delete your account:</strong> Your profile, posts, stories, comments, and direct messages are permanently deleted from our servers. Map and trail data stored on your device is not affected — you can delete it from within the app or by uninstalling. We retain only what we are legally required to keep (e.g. transaction records for advertiser payments). Deletion is permanent and cannot be undone.</p></div>
+
+    <h2>How to request deletion</h2>
+    <p>Fill in the form below and we will process your request within <strong>30 days</strong>. You will receive a confirmation email when deletion is complete. If you have trouble with the form, email us directly at <a href="mailto:locate@locatecommunity.com?subject=Account%20Deletion%20Request">locate@locatecommunity.com</a> with the subject <em>Account Deletion Request</em>.</p>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;margin:32px 0 48px">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="field"><label>Full name</label><input id="del-name" type="text" placeholder="Your full name"></div>
+        <div class="field"><label>Email address on your account</label><input id="del-email" type="email" placeholder="you@email.com"></div>
+        <div class="field"><label>Username (if known)</label><input id="del-username" type="text" placeholder="@username"></div>
+        <div class="field">
+          <label>Reason for leaving <span style="font-weight:400;color:var(--ink3)">(optional)</span></label>
+          <select id="del-reason">
+            <option value="">Prefer not to say</option>
+            <option>I no longer use the app</option>
+            <option>Privacy concerns</option>
+            <option>I created a duplicate account</option>
+            <option>I had a bad experience</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <p style="font-size:13px;color:var(--ink3);margin:0">By submitting this form you confirm you are the account holder. Deletion is permanent and cannot be reversed.</p>
+        <button onclick="submitDeletion()" style="align-self:flex-start;padding:12px 28px;background:#c0392b;border:none;border-radius:100px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit">Submit deletion request</button>
+      </div>
+    </div>
+
+    <h2>Frequently asked questions</h2>
+    <p><strong>Can I pause my account instead?</strong><br>Yes — you can deactivate your account temporarily from Settings inside the app without deleting your data.</p>
+    <p><strong>What about my map and trail data?</strong><br>Trail data is stored only on your device and is never sent to our servers. To remove it, delete the app from your device.</p>
+    <p><strong>How long does deletion take?</strong><br>We process all requests within 30 days. Cached copies on content delivery networks may persist for up to 90 days before expiring.</p>
+    <p><strong>Can I create a new account after deleting?</strong><br>Yes, using the same or a different email address.</p>
+  </div>
+  <div class="pub-footer">
+    <div class="pub-footer-inner">
+      <div class="pub-footer-logo">locate</div>
+      <div class="pub-footer-links">
+        <a onclick="showPub('home')">Home</a>
+        <a onclick="showPub('privacy')">Privacy Policy</a>
+        <a onclick="showPub('contact')">Contact</a>
       </div>
       <div class="pub-footer-copy">© 2026 Locate · Balo Services · locate@locatecommunity.com</div>
     </div>
@@ -627,7 +683,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <tr><td>Cloudflare R2</td><td>Media hosting</td><td>Media files you post</td></tr>
     <tr><td>Resend</td><td>Service emails</td><td>Your email address</td></tr></table>
     <h2>7. Your Rights</h2>
-    <p>You can edit your profile, delete posts, delete your account, withdraw location permission, and request a copy of your data at any time. Email <a href="mailto:locate@locatecommunity.com">locate@locatecommunity.com</a> — we respond within 30 days.</p>
+    <p>You can edit your profile, delete posts, withdraw location permission, and request a copy of your data at any time. To permanently delete your account and all associated data, use our <a onclick="showPub('delete-account')" href="/delete-account">Account Deletion Request</a> page. For other data requests email <a href="mailto:locate@locatecommunity.com">locate@locatecommunity.com</a> — we respond within 30 days.</p>
     <h2>8. Content Standards and Moderation</h2>
     <p>All content posted to Locate — including photos, videos, stories, and comments — is subject to our Community Guidelines set out in the <a onclick="showPub('terms')" href="javascript:void(0)">Terms of Use</a>. We do not permit the public sharing of graphic violence in any form outside of a clearly identified, genuine newsworthy context. Content that violates our guidelines is removed and may result in account suspension. Reported content data (report reason, content type, outcome) is retained for safety and audit purposes.</p>
     <h2>9. Children's Privacy</h2>
@@ -952,6 +1008,16 @@ function submitContact() {
   window.location.href = `mailto:locate@locatecommunity.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent("From: "+name+" <"+email+">\n\n"+msg)}`;
 }
 
+function submitDeletion() {
+  const name = document.getElementById("del-name").value.trim();
+  const email = document.getElementById("del-email").value.trim();
+  const username = document.getElementById("del-username").value.trim();
+  const reason = document.getElementById("del-reason").value;
+  if (!name || !email) { toast("Please enter your name and email address.", "error"); return; }
+  const body = `Account Deletion Request\n\nName: ${name}\nEmail: ${email}\nUsername: ${username || "Not provided"}\nReason: ${reason || "Prefer not to say"}\n\nI confirm I am the account holder and understand that deletion is permanent.`;
+  window.location.href = `mailto:locate@locatecommunity.com?subject=${encodeURIComponent("Account Deletion Request")}&body=${encodeURIComponent(body)}`;
+}
+
 // ── AUTH ───────────────────────────────────────────────────────────────────────
 async function doLogin() {
   const btn = document.getElementById("login-btn");
@@ -988,7 +1054,7 @@ window.addEventListener("popstate", e => {
 
 window.addEventListener("DOMContentLoaded", async () => {
   // Route to correct page based on URL path
-  const pubPages = ["home","download","advertise","about","contact","privacy","terms"];
+  const pubPages = ["home","download","advertise","about","contact","privacy","terms","delete-account"];
   const path = window.location.pathname.replace(/^\//, "") || "home";
   const startPage = pubPages.includes(path) ? path : "home";
 
