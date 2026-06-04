@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create your ad — Locate</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0F0D;--surface:#0F1A17;--card:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);--sage:#3A6458;--sage-l:#7AADA0;
+  --flag:#BF5A39;--ink:#DDE8E4;--ink2:#A8C8BE;--ink3:rgba(160,200,185,0.45);
+}
+body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;height:64px;background:rgba(10,15,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:100}
+.nav-logo{font-style:italic;font-size:22px;font-weight:300;color:var(--ink);text-decoration:none}
+.nav-back{font-size:13px;color:var(--ink3);text-decoration:none;transition:color .15s}
+.nav-back:hover{color:var(--ink)}
+
+/* Layout */
+.wrap{max-width:720px;margin:0 auto;padding:96px 24px 80px}
+
+/* Steps */
+.step-bar{display:flex;align-items:center;gap:0;margin-bottom:48px}
+.step{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink3);flex:1}
+.step.active{color:var(--ink)}
+.step.done{color:var(--sage-l)}
+.step-num{width:26px;height:26px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.step.done .step-num{background:var(--sage);border-color:var(--sage);color:#D8EDE7}
+.step.active .step-num{border-color:var(--ink);color:var(--ink)}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 8px}
+
+/* Packages */
+.pkg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.pkg-card{background:var(--surface);border:2px solid var(--border);border-radius:18px;padding:26px 22px;cursor:pointer;position:relative;transition:border-color .2s}
+.pkg-card:hover{border-color:var(--sage-l)}
+.pkg-card.selected{border-color:var(--sage-l);background:rgba(58,100,88,0.12)}
+.pkg-card.popular{border-color:rgba(191,90,57,0.4)}
+.pkg-card.popular.selected{border-color:var(--flag)}
+.pkg-popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--flag);color:white;font-size:10px;font-weight:600;padding:3px 12px;border-radius:100px;white-space:nowrap}
+.pkg-name{font-size:17px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.pkg-price{font-size:34px;font-weight:300;color:var(--ink);line-height:1}
+.pkg-price span{font-size:14px;color:var(--ink3);font-weight:400}
+.pkg-desc{font-size:12px;color:var(--ink3);line-height:1.65;margin-top:10px}
+.pkg-check{position:absolute;top:14px;right:14px;width:20px;height:20px;border-radius:50%;background:var(--sage);display:none;align-items:center;justify-content:center}
+.pkg-card.selected .pkg-check{display:flex}
+
+/* Form */
+.form-section{margin-bottom:36px}
+.form-section-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:12px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em}
+.field input,.field textarea,.field select{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--ink);font-family:inherit;outline:none;transition:border-color .15s;width:100%}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--sage-l)}
+.field textarea{resize:vertical;min-height:90px}
+.field select option{background:#0F1A17;color:var(--ink)}
+.field-hint{font-size:11px;color:var(--ink3);line-height:1.5;margin-top:2px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* Image upload */
+.upload-area{border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative}
+.upload-area:hover{border-color:var(--sage-l)}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-label{font-size:13px;color:var(--ink3);line-height:1.6}
+.upload-label strong{color:var(--sage-l)}
+.upload-preview{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-top:14px;display:none}
+
+/* Summary */
+.summary-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:32px}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px}
+.summary-row:last-child{border-bottom:none;padding-top:14px;font-weight:600;font-size:16px;color:var(--ink)}
+.summary-label{color:var(--ink3)}
+.summary-val{color:var(--ink2)}
+.ad-preview{background:rgba(58,100,88,0.08);border:1px solid rgba(58,100,88,0.2);border-radius:14px;padding:16px;margin-bottom:32px}
+.ad-preview-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--sage-l);margin-bottom:12px}
+.ad-preview-inner{display:flex;gap:14px;align-items:flex-start}
+.ad-preview-img{width:80px;height:60px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--border);display:none}
+.ad-preview-text .headline{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.ad-preview-text .body{font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:8px}
+.ad-preview-cta{display:inline-block;padding:6px 16px;background:var(--sage);border-radius:100px;font-size:12px;font-weight:600;color:#D8EDE7;text-decoration:none}
+
+/* Buttons */
+.btn-primary{padding:14px 32px;background:var(--sage);border:none;border-radius:100px;font-size:15px;font-weight:600;color:#D8EDE7;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-secondary{padding:14px 28px;background:transparent;border:1px solid var(--border);border-radius:100px;font-size:14px;color:var(--ink2);cursor:pointer;font-family:inherit}
+.btn-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* Success */
+#step-success{display:none}
+.success-icon{width:64px;height:64px;border-radius:50%;background:rgba(45,106,64,0.2);border:2px solid rgba(45,106,64,0.4);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 24px}
+.success-title{font-size:28px;font-weight:300;color:var(--ink);text-align:center;margin-bottom:12px}
+.success-sub{font-size:15px;color:var(--ink2);text-align:center;line-height:1.7;max-width:480px;margin:0 auto 32px}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1E2E28;border:1px solid var(--border);border-radius:100px;padding:10px 22px;font-size:13px;color:var(--ink2);opacity:0;transition:all .25s;pointer-events:none;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.error{border-color:rgba(163,45,45,0.5);color:#F08080}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="/">locate</a>
+  <a class="nav-back" href="/advertise">← Back to advertising</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- Step indicator -->
+  <div class="step-bar">
+    <div class="step active" id="ind-1"><div class="step-num">1</div><span>Package</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="ind-2"><div class="step-num">2</div><span>Ad details</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="ind-3"><div class="step-num">3</div><span>Review</span></div>
+  </div>
+
+  <!-- Step 1: Package -->
+  <div id="step-1">
+    <div style="margin-bottom:32px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-l);margin-bottom:10px">Step 1 of 3</div>
+      <div style="font-size:28px;font-weight:300;color:var(--ink);margin-bottom:8px">Choose your package</div>
+      <div style="font-size:14px;color:var(--ink2)">Flat-rate pricing — no bidding, no surprises. All packages include full analytics.</div>
+    </div>
+
+    <div class="pkg-grid">
+      <div class="pkg-card" id="pkg-starter" onclick="selectPackage('starter')">
+        <div class="pkg-check">✓</div>
+        <div class="pkg-name">Starter</div>
+        <div class="pkg-price">$49<span> USD</span></div>
+        <div class="pkg-desc">7 days in feed · ~5,000 impressions<br>Great for local businesses making their first move.</div>
+      </div>
+      <div class="pkg-card popular" id="pkg-explorer" onclick="selectPackage('explorer')">
+        <div class="pkg-popular-tag">Most popular</div>
+        <div class="pkg-check">✓</div>
+        <div class="pkg-name">Explorer</div>
+        <div class="pkg-price">$99<span> USD</span></div>
+        <div class="pkg-desc">14 days in feed · ~15,000 impressions<br>Reach travellers across your region.</div>
+      </div>
+      <div class="pkg-card" id="pkg-destination" onclick="selectPackage('destination')">
+        <div class="pkg-check">✓</div>
+        <div class="pkg-name">Destination</div>
+        <div class="pkg-price">$199<span> USD</span></div>
+        <div class="pkg-desc">30 days in feed · ~40,000 impressions<br>Maximum exposure for hotels and services.</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" id="btn-1-next" onclick="goStep(2)" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Ad details -->
+  <div id="step-2" style="display:none">
+    <div style="margin-bottom:32px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-l);margin-bottom:10px">Step 2 of 3</div>
+      <div style="font-size:28px;font-weight:300;color:var(--ink);margin-bottom:8px">Create your ad</div>
+      <div style="font-size:14px;color:var(--ink2)">All ads are reviewed by our team before going live — typically within 24 hours.</div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Your business</div>
+      <div class="field-row">
+        <div class="field"><label>Business name</label><input id="f-business" type="text" placeholder="e.g. The Grand Hotel" oninput="updatePreview()"></div>
+        <div class="field"><label>Your name</label><input id="f-contact" type="text" placeholder="Full name"></div>
+      </div>
+      <div class="field"><label>Email address</label><input id="f-email" type="email" placeholder="you@yourbusiness.com"></div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Ad content</div>
+      <div class="field">
+        <label>Headline <span style="font-weight:400;color:var(--ink3)">(max 60 characters)</span></label>
+        <input id="f-headline" type="text" maxlength="60" placeholder="e.g. Stay in the heart of the city" oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label>Body text <span style="font-weight:400;color:var(--ink3)">(max 120 characters, optional)</span></label>
+        <textarea id="f-body" maxlength="120" placeholder="e.g. Free breakfast · Free cancellation · Book direct and save 10%" oninput="updatePreview()"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Button label</label>
+          <input id="f-cta-label" type="text" maxlength="30" placeholder="e.g. Book now" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Button URL</label>
+          <input id="f-cta-url" type="url" placeholder="https://yourbusiness.com">
+        </div>
+      </div>
+      <div class="field">
+        <label>Ad image <span style="font-weight:400;color:var(--ink3)">(optional — JPG or PNG, min 800×400px)</span></label>
+        <div class="upload-area">
+          <input type="file" id="f-image" accept="image/jpeg,image/png,image/webp" onchange="handleImage(this)">
+          <div class="upload-label"><strong>Click to upload</strong> or drag and drop<br>JPG, PNG or WebP · Max 5 MB</div>
+          <img id="img-preview" class="upload-preview" alt="">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Targeting</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Target country</label>
+          <input id="f-country" type="text" placeholder="e.g. Thailand">
+          <div class="field-hint">Leave blank to reach all countries.</div>
+        </div>
+        <div class="field">
+          <label>Target city <span style="font-weight:400;color:var(--ink3)">(optional)</span></label>
+          <input id="f-city" type="text" placeholder="e.g. Bangkok">
+        </div>
+      </div>
+    </div>
+
+    <!-- Live preview -->
+    <div class="ad-preview">
+      <div class="ad-preview-label">Preview — how your ad will look in the feed</div>
+      <div style="font-size:10px;color:var(--sage-l);margin-bottom:10px;letter-spacing:0.04em">Sponsored · <span id="prev-business">Your business</span></div>
+      <div class="ad-preview-inner">
+        <img id="prev-img" class="ad-preview-img" alt="">
+        <div class="ad-preview-text">
+          <div class="headline" id="prev-headline">Your headline will appear here</div>
+          <div class="body" id="prev-body"></div>
+          <span class="ad-preview-cta" id="prev-cta">Book now</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goStep(1)">← Back</button>
+      <button class="btn-primary" onclick="goStep(3)">Review →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Review & submit -->
+  <div id="step-3" style="display:none">
+    <div style="margin-bottom:32px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-l);margin-bottom:10px">Step 3 of 3</div>
+      <div style="font-size:28px;font-weight:300;color:var(--ink);margin-bottom:8px">Review your order</div>
+      <div style="font-size:14px;color:var(--ink2)">Check everything looks right. Once submitted your ad goes to our review team.</div>
+    </div>
+
+    <div class="ad-preview" id="final-preview">
+      <div class="ad-preview-label">Your ad</div>
+      <div style="font-size:10px;color:var(--sage-l);margin-bottom:10px;letter-spacing:0.04em">Sponsored · <span id="rev-business"></span></div>
+      <div class="ad-preview-inner">
+        <img id="rev-img" class="ad-preview-img" alt="">
+        <div class="ad-preview-text">
+          <div class="headline" id="rev-headline"></div>
+          <div class="body" id="rev-body"></div>
+          <span class="ad-preview-cta" id="rev-cta"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-row"><span class="summary-label">Package</span><span class="summary-val" id="rev-package"></span></div>
+      <div class="summary-row"><span class="summary-label">Duration</span><span class="summary-val" id="rev-duration"></span></div>
+      <div class="summary-row"><span class="summary-label">Estimated impressions</span><span class="summary-val" id="rev-impressions"></span></div>
+      <div class="summary-row"><span class="summary-label">Targeting</span><span class="summary-val" id="rev-targeting"></span></div>
+      <div class="summary-row"><span class="summary-label">Contact</span><span class="summary-val" id="rev-contact"></span></div>
+      <div class="summary-row"><span>Total</span><span id="rev-total"></span></div>
+    </div>
+
+    <div style="background:rgba(58,100,88,0.08);border:1px solid rgba(58,100,88,0.2);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--ink2);line-height:1.65;margin-bottom:28px">
+      After submitting, a member of our team will review your ad and email you a payment link within 24 hours. Your ad goes live once payment is confirmed.
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goStep(2)">← Edit</button>
+      <button class="btn-primary" id="btn-submit" onclick="submitAd()">Submit ad request</button>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div id="step-success">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Ad submitted</div>
+    <div class="success-sub">Thank you. Our team will review your ad and email you a payment link at <strong id="suc-email"></strong> within 24 hours.</div>
+    <div style="text-align:center">
+      <a href="/advertise" style="display:inline-block;padding:12px 28px;background:var(--sage);border-radius:100px;font-size:14px;font-weight:600;color:#D8EDE7;text-decoration:none">Back to advertising</a>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = window.LOCATE_API_URL || "https://api.locatecommunity.com";
+
+const packages = {
+  starter:     { name:"Starter",     price:49,  duration:"7 days",  impressions:"~5,000" },
+  explorer:    { name:"Explorer",    price:99,  duration:"14 days", impressions:"~15,000" },
+  destination: { name:"Destination", price:199, duration:"30 days", impressions:"~40,000" }
+};
+
+let selectedPkg = null;
+let imageBase64 = null;
+
+function selectPackage(key) {
+  selectedPkg = key;
+  document.querySelectorAll(".pkg-card").forEach(c => c.classList.remove("selected"));
+  document.getElementById("pkg-"+key).classList.add("selected");
+  document.getElementById("btn-1-next").disabled = false;
+}
+
+function goStep(n) {
+  if (n === 3 && !validateStep2()) return;
+  [1,2,3].forEach(i => {
+    document.getElementById("step-"+i).style.display = i === n ? "block" : "none";
+    const ind = document.getElementById("ind-"+i);
+    ind.classList.remove("active","done");
+    if (i < n) ind.classList.add("done");
+    else if (i === n) ind.classList.add("active");
+  });
+  document.getElementById("step-success").style.display = "none";
+  if (n === 3) populateReview();
+  window.scrollTo(0,0);
+}
+
+function validateStep2() {
+  const req = [
+    ["f-business", "Please enter your business name."],
+    ["f-contact",  "Please enter your name."],
+    ["f-email",    "Please enter your email address."],
+    ["f-headline", "Please enter a headline for your ad."],
+    ["f-cta-label","Please enter a button label."],
+    ["f-cta-url",  "Please enter a URL for your button."],
+  ];
+  for (const [id, msg] of req) {
+    if (!document.getElementById(id).value.trim()) { toast(msg, "error"); return false; }
+  }
+  const url = document.getElementById("f-cta-url").value.trim();
+  if (!/^https?:\/\/.+/.test(url)) { toast("Button URL must start with https://", "error"); return false; }
+  return true;
+}
+
+function updatePreview() {
+  const headline = document.getElementById("f-headline").value || "Your headline will appear here";
+  const body = document.getElementById("f-body").value;
+  const cta = document.getElementById("f-cta-label").value || "Book now";
+  const biz = document.getElementById("f-business").value || "Your business";
+  document.getElementById("prev-headline").textContent = headline;
+  document.getElementById("prev-body").textContent = body;
+  document.getElementById("prev-cta").textContent = cta;
+  document.getElementById("prev-business").textContent = biz;
+}
+
+function handleImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast("Image must be under 5 MB.", "error"); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    imageBase64 = e.target.result;
+    const img = document.getElementById("img-preview");
+    img.src = imageBase64;
+    img.style.display = "block";
+    document.querySelector(".upload-label").style.display = "none";
+    document.getElementById("prev-img").src = imageBase64;
+    document.getElementById("prev-img").style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+function populateReview() {
+  const pkg = packages[selectedPkg];
+  const country = document.getElementById("f-country").value.trim();
+  const city = document.getElementById("f-city").value.trim();
+  const targeting = city && country ? `${city}, ${country}` : country || city || "All countries";
+
+  document.getElementById("rev-business").textContent = document.getElementById("f-business").value;
+  document.getElementById("rev-headline").textContent = document.getElementById("f-headline").value;
+  document.getElementById("rev-body").textContent = document.getElementById("f-body").value;
+  document.getElementById("rev-cta").textContent = document.getElementById("f-cta-label").value;
+  document.getElementById("rev-package").textContent = pkg.name;
+  document.getElementById("rev-duration").textContent = pkg.duration;
+  document.getElementById("rev-impressions").textContent = pkg.impressions;
+  document.getElementById("rev-targeting").textContent = targeting;
+  document.getElementById("rev-contact").textContent = document.getElementById("f-email").value;
+  document.getElementById("rev-total").textContent = "$"+pkg.price+" USD";
+
+  const revImg = document.getElementById("rev-img");
+  if (imageBase64) { revImg.src = imageBase64; revImg.style.display = "block"; }
+  else { revImg.style.display = "none"; }
+}
+
+async function submitAd() {
+  const btn = document.getElementById("btn-submit");
+  btn.disabled = true;
+  btn.textContent = "Submitting…";
+
+  const payload = {
+    package_name:    packages[selectedPkg].name,
+    price_usd:       packages[selectedPkg].price,
+    business_name:   document.getElementById("f-business").value.trim(),
+    contact_name:    document.getElementById("f-contact").value.trim(),
+    advertiser_email:document.getElementById("f-email").value.trim(),
+    headline:        document.getElementById("f-headline").value.trim(),
+    body:            document.getElementById("f-body").value.trim(),
+    cta_label:       document.getElementById("f-cta-label").value.trim(),
+    cta_url:         document.getElementById("f-cta-url").value.trim(),
+    target_country:  document.getElementById("f-country").value.trim(),
+    target_city:     document.getElementById("f-city").value.trim(),
+    image_base64:    imageBase64 || null,
+  };
+
+  try {
+    const res = await fetch(API+"/api/ads/submit", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error("Server error");
+
+    // Show success
+    [1,2,3].forEach(i => document.getElementById("step-"+i).style.display = "none");
+    document.getElementById("step-success").style.display = "block";
+    document.getElementById("suc-email").textContent = payload.advertiser_email;
+    document.querySelectorAll(".step").forEach(s => { s.classList.remove("active"); s.classList.add("done"); });
+    window.scrollTo(0,0);
+  } catch(e) {
+    // Fallback: open mailto so submission still works
+    const body = `Ad Submission\n\nPackage: ${payload.package_name} ($${payload.price_usd} USD)\nBusiness: ${payload.business_name}\nContact: ${payload.contact_name}\nEmail: ${payload.advertiser_email}\n\nHeadline: ${payload.headline}\nBody: ${payload.body||"—"}\nCTA: ${payload.cta_label} → ${payload.cta_url}\nTargeting: ${payload.target_city||""}${payload.target_city&&payload.target_country?", ":""}${payload.target_country||"All countries"}`;
+    window.location.href = "mailto:locate@locatecommunity.com?subject="+encodeURIComponent("Ad Submission — "+payload.package_name)+"&body="+encodeURIComponent(body);
+    btn.disabled = false;
+    btn.textContent = "Submit ad request";
+  }
+}
+
+function toast(msg, type="") {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.className = "show "+(type||"");
+  setTimeout(() => el.className = "", 3500);
+}
+</script>
+</body>
+</html>
