@@ -921,6 +921,8 @@ function showPub(name) {
   document.getElementById("pub-nav").style.display = "flex";
   document.getElementById("login-screen").classList.remove("active");
   document.getElementById("app").classList.remove("active");
+  const slug = name === "home" ? "/" : "/" + name;
+  history.pushState({page: name}, "", slug);
   window.scrollTo(0,0);
 }
 
@@ -980,7 +982,16 @@ function doLogout() {
   showPub("home");
 }
 
+window.addEventListener("popstate", e => {
+  if (e.state && e.state.page) showPub(e.state.page);
+});
+
 window.addEventListener("DOMContentLoaded", async () => {
+  // Route to correct page based on URL path
+  const pubPages = ["home","download","advertise","about","contact","privacy","terms"];
+  const path = window.location.pathname.replace(/^\//, "") || "home";
+  const startPage = pubPages.includes(path) ? path : "home";
+
   if (token) {
     const res = await fetch(API+"/auth/me",{headers:{"Authorization":"Bearer "+token}}).then(r=>r.json()).catch(()=>null);
     if (res?.user?.role==="admin") {
@@ -988,8 +999,14 @@ window.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("pub-nav").style.display="none";
       document.getElementById("app").classList.add("active");
       loadDashboard(); loadReportsBadge();
-    } else { token=""; localStorage.removeItem("locate_admin_token"); }
+    } else {
+      token=""; localStorage.removeItem("locate_admin_token");
+      showPub(startPage);
+    }
+  } else {
+    showPub(startPage);
   }
+  history.replaceState({page: startPage}, "", startPage === "home" ? "/" : "/" + startPage);
   document.getElementById("login-password").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
 });
 
