@@ -234,6 +234,60 @@ tr:hover td{background:rgba(255,255,255,.02)}
   .stats-grid{grid-template-columns:1fr 1fr}
   .download-section{padding:36px 24px;margin:0 12px}
 }
+/* App mockups */
+.mockup-section{padding:80px 24px;max-width:1100px;margin:0 auto}
+.mockup-row{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:48px}
+.mockup-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;flex:0 0 auto}
+.phone-frame{width:200px;height:400px;background:#0A0F0D;border-radius:32px;border:2px solid rgba(255,255,255,0.12);box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.04) inset;overflow:hidden;position:relative}
+.phone-screen{position:absolute;inset:6px;border-radius:27px;overflow:hidden;background:#0d1a16;display:flex;flex-direction:column}
+.app-status-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px 4px;font-size:9px;font-weight:600;color:var(--ink2);flex-shrink:0;background:#0d1a16}
+.status-dot{width:4px;height:4px;border-radius:50%;background:var(--ink3)}
+.app-map-bg{flex:1;background:#0f1e18;position:relative;overflow:hidden}
+.map-road{position:absolute;background:rgba(255,255,255,0.08)}
+.map-trail-svg{position:absolute;inset:0;width:100%;height:100%}
+.map-flag{position:absolute;display:flex;flex-direction:column;align-items:center}
+.map-flag-pole{width:2px;height:14px;background:var(--flag)}
+.map-flag-banner{width:8px;height:6px;background:var(--flag);border-radius:0 2px 2px 0;margin-top:-14px;margin-left:2px}
+.map-dot{position:absolute;width:12px;height:12px;transform:translate(-50%,-50%)}
+.map-dot::after{content:'';position:absolute;inset:2px;border-radius:50%;background:var(--sage-l)}
+.map-dot-ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(122,173,160,0.35);animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.8);opacity:0}}
+.map-pin{position:absolute;width:10px;height:10px;background:var(--flag);border-radius:50% 50% 50% 0;transform:translate(-50%,-100%) rotate(-45deg)}
+.map-pin::after{content:'';position:absolute;inset:3px;border-radius:50%;background:#0d1a16}
+.app-bottom-bar{background:rgba(10,15,13,0.95);border-top:1px solid var(--border);padding:10px 12px;flex-shrink:0}
+.app-trail-info{display:flex;align-items:center;gap:0;justify-content:space-around}
+.trail-stat{text-align:center;flex:1}
+.trail-stat-val{font-size:13px;font-weight:600;color:var(--ink)}
+.trail-stat-label{font-size:9px;color:var(--ink3);margin-top:2px}
+.trail-stat-divider{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.route-btn{margin-top:10px;background:var(--sage);border-radius:100px;text-align:center;padding:8px;font-size:11px;font-weight:600;color:#D8EDE7}
+.feed-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px 6px;flex-shrink:0;border-bottom:1px solid var(--border)}
+.feed-logo{font-style:italic;font-size:14px;font-weight:300;color:var(--ink)}
+.feed-header-icons{display:flex;gap:8px}
+.feed-icon-circle{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.06)}
+.feed-post{padding:10px 12px;border-bottom:1px solid var(--border)}
+.feed-post-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.feed-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0}
+.feed-user{font-size:11px;font-weight:600;color:var(--ink)}
+.feed-loc{font-size:9px;color:var(--ink3)}
+.feed-img-placeholder{height:80px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:8px}
+.feed-caption{font-size:10px;color:var(--ink2);line-height:1.5;margin-bottom:6px}
+.feed-actions{display:flex;gap:12px;font-size:9px;color:var(--ink3)}
+.feed-like{cursor:pointer}
+.feed-comment{cursor:pointer}
+.mockup-caption{font-size:15px;font-weight:500;color:var(--ink);text-align:center}
+.mockup-sub{font-size:13px;color:var(--ink3);text-align:center;max-width:180px;line-height:1.55}
+
+/* Cookie banner */
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;background:rgba(15,26,23,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:20px 32px;z-index:500;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.cookie-banner.hidden{display:none}
+.cookie-text{flex:1;min-width:260px;font-size:13px;color:var(--ink2);line-height:1.65}
+.cookie-text a{color:var(--sage-l);text-decoration:none}
+.cookie-text a:hover{text-decoration:underline}
+.cookie-btns{display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap}
+.cookie-btn-accept{padding:9px 22px;background:var(--sage);border:none;border-radius:100px;font-size:13px;font-weight:600;color:#D8EDE7;cursor:pointer;font-family:inherit;white-space:nowrap}
+.cookie-btn-decline{padding:9px 18px;background:transparent;border:1px solid var(--border);border-radius:100px;font-size:13px;color:var(--ink3);cursor:pointer;font-family:inherit;white-space:nowrap}
+.cookie-btn-decline:hover{color:var(--ink2);border-color:rgba(255,255,255,0.15)}
 </style>
 </head>
 <body>
@@ -308,6 +362,126 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div class="feature-title">Direct messages</div>
         <div class="feature-body">Private conversations between explorers. Plan trips together, ask for local advice, or stay in touch with people you meet along the way.</div>
       </div>
+    </div>
+  </div>
+
+  <!-- App mockups -->
+  <div class="mockup-section">
+    <div class="section-label" style="text-align:center;margin-bottom:14px">See it in action</div>
+    <div class="mockup-row">
+
+      <!-- Screen 1: Map & trail -->
+      <div class="mockup-wrap">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="app-status-bar"><span>9:41</span><span style="display:flex;gap:4px;align-items:center"><span class="status-dot"></span><span class="status-dot"></span><span class="status-dot"></span></span></div>
+            <div class="app-map-bg">
+              <!-- Grid roads -->
+              <div class="map-road" style="top:38%;left:0;right:0;height:3px"></div>
+              <div class="map-road" style="top:62%;left:0;right:0;height:2px;opacity:.5"></div>
+              <div class="map-road" style="left:30%;top:0;bottom:0;width:3px"></div>
+              <div class="map-road" style="left:65%;top:0;bottom:0;width:2px;opacity:.5"></div>
+              <!-- Trail path -->
+              <svg class="map-trail-svg" viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 100 300 Q 80 260 90 220 Q 100 180 85 150 Q 72 120 80 90" stroke="#BF5A39" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="6 3" opacity="0.9"/>
+              </svg>
+              <!-- Flag (start) -->
+              <div class="map-flag" style="bottom:22%;left:47%">
+                <div class="map-flag-pole"></div>
+                <div class="map-flag-banner"></div>
+              </div>
+              <!-- Current location dot -->
+              <div class="map-dot" style="top:23%;left:36%">
+                <div class="map-dot-ring"></div>
+              </div>
+              <!-- Saved pin -->
+              <div class="map-pin" style="top:48%;left:60%"></div>
+            </div>
+            <div class="app-bottom-bar">
+              <div class="app-trail-info">
+                <div class="trail-stat"><div class="trail-stat-val">1.4 km</div><div class="trail-stat-label">Distance</div></div>
+                <div class="trail-stat-divider"></div>
+                <div class="trail-stat"><div class="trail-stat-val">24 min</div><div class="trail-stat-label">Walking</div></div>
+                <div class="trail-stat-divider"></div>
+                <div class="trail-stat"><div class="trail-stat-val">Recording</div><div class="trail-stat-label" style="color:#BF5A39">Active</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-caption">Trail recording</div>
+        <div class="mockup-sub">Your path tracked in real time, even with your screen off.</div>
+      </div>
+
+      <!-- Screen 2: Social feed -->
+      <div class="mockup-wrap">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="app-status-bar"><span>9:41</span><span style="display:flex;gap:4px;align-items:center"><span class="status-dot"></span><span class="status-dot"></span><span class="status-dot"></span></span></div>
+            <div class="feed-header">
+              <span class="feed-logo">locate</span>
+              <div class="feed-header-icons"><div class="feed-icon-circle"></div><div class="feed-icon-circle"></div></div>
+            </div>
+            <!-- Post 1 -->
+            <div class="feed-post">
+              <div class="feed-post-header">
+                <div class="feed-avatar" style="background:linear-gradient(135deg,#3A6458,#7AADA0)">M</div>
+                <div><div class="feed-user">Mia K.</div><div class="feed-loc">Bangkok, Thailand</div></div>
+              </div>
+              <div class="feed-img-placeholder" style="background:linear-gradient(135deg,rgba(58,100,88,0.3),rgba(122,173,160,0.15))">
+                <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.06);margin:0 auto 6px"></div>
+                <div style="font-size:9px;color:var(--ink3)">Wat Pho Temple</div>
+              </div>
+              <div class="feed-caption">Golden hour at Wat Pho. Worth every step.</div>
+              <div class="feed-actions"><span class="feed-like">♡ 48</span><span class="feed-comment">💬 12</span></div>
+            </div>
+            <!-- Post 2 (partial) -->
+            <div class="feed-post" style="margin-bottom:0;opacity:.6">
+              <div class="feed-post-header">
+                <div class="feed-avatar" style="background:linear-gradient(135deg,#BF5A39,#E08060)">J</div>
+                <div><div class="feed-user">James R.</div><div class="feed-loc">Lisbon, Portugal</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-caption">Community feed</div>
+        <div class="mockup-sub">Follow explorers. Share what you find.</div>
+      </div>
+
+      <!-- Screen 3: Return home -->
+      <div class="mockup-wrap">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="app-status-bar"><span>9:41</span><span style="display:flex;gap:4px;align-items:center"><span class="status-dot"></span><span class="status-dot"></span><span class="status-dot"></span></span></div>
+            <div class="app-map-bg" style="background:#0d1f1a">
+              <!-- Roads -->
+              <div class="map-road" style="top:45%;left:0;right:0;height:3px"></div>
+              <div class="map-road" style="top:65%;left:0;right:0;height:2px;opacity:.4"></div>
+              <div class="map-road" style="left:40%;top:0;bottom:0;width:3px"></div>
+              <div class="map-road" style="left:70%;top:0;bottom:0;width:2px;opacity:.4"></div>
+              <!-- Route highlight -->
+              <svg class="map-trail-svg" viewBox="0 0 200 340" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 80 80 L 80 153 L 140 153 L 140 221" stroke="#7AADA0" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.85"/>
+              </svg>
+              <!-- Hotel pin -->
+              <div class="map-flag" style="bottom:33%;left:62%">
+                <div class="map-flag-pole" style="background:var(--sage-l)"></div>
+                <div class="map-flag-banner" style="background:var(--sage-l)"></div>
+              </div>
+              <!-- You -->
+              <div class="map-dot" style="top:20%;left:34%"><div class="map-dot-ring"></div></div>
+            </div>
+            <div class="app-bottom-bar" style="padding:14px 16px">
+              <div style="font-size:10px;font-weight:600;color:var(--sage-l);letter-spacing:0.05em;margin-bottom:6px">ROUTE HOME</div>
+              <div style="font-size:18px;font-weight:300;color:var(--ink);margin-bottom:2px">12 min walk</div>
+              <div style="font-size:11px;color:var(--ink3)">Via real roads · 0.9 km</div>
+              <div class="route-btn">Start navigation</div>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-caption">Always find home</div>
+        <div class="mockup-sub">Real roads. Not a straight line through buildings.</div>
+      </div>
+
     </div>
   </div>
 
@@ -965,10 +1139,32 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <div id="toast"></div>
 
+<!-- COOKIE CONSENT BANNER -->
+<div class="cookie-banner hidden" id="cookie-banner">
+  <div class="cookie-text">
+    We use cookies to keep you signed in and measure anonymous ad impressions. We never use tracking pixels or third-party ad networks. See our <a onclick="showPub('privacy')" href="/privacy">Privacy Policy</a> for full details.
+  </div>
+  <div class="cookie-btns">
+    <button class="cookie-btn-decline" onclick="cookieChoice(false)">Decline non-essential</button>
+    <button class="cookie-btn-accept" onclick="cookieChoice(true)">Accept all</button>
+  </div>
+</div>
+
 <script>
 const API = window.LOCATE_API_URL || localStorage.getItem("locate_api_url") || "http://localhost:4000";
 let token = localStorage.getItem("locate_admin_token") || "";
 let _targetUserId = null, _targetUserName = "";
+
+// ── COOKIE CONSENT ─────────────────────────────────────────────────────────────
+function initCookieBanner() {
+  const choice = localStorage.getItem("cookie_consent");
+  if (!choice) document.getElementById("cookie-banner").classList.remove("hidden");
+}
+function cookieChoice(accepted) {
+  localStorage.setItem("cookie_consent", accepted ? "accepted" : "declined");
+  document.getElementById("cookie-banner").classList.add("hidden");
+}
+initCookieBanner();
 
 // ── PUBLIC SITE ────────────────────────────────────────────────────────────────
 function showPub(name) {
